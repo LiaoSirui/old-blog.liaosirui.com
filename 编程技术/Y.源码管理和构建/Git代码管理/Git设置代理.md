@@ -29,3 +29,13 @@ Host github.com
     ProxyCommand nc -v -x 127.0.0.1:8899 %h %p
 ```
 
+如果是在 Windows 下
+
+```bash
+Host github.com
+    Hostname ssh.github.com
+    Port 443
+    User git
+    ProxyCommand connect -S 127.0.0.1:8899 %h %p
+```
+

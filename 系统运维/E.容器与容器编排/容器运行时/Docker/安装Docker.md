@@ -198,9 +198,8 @@ systemctl restart docker
 配置源
 
 ```bash
-dnf config-manager \
-    --add-repo \
-    https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+dnf -y install dnf-plugins-core
+dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 ```
 
 查看可用版本
@@ -257,6 +256,38 @@ dnf versionlock docker-ce
 
 ```bash
 3:docker-ce-20.10.14-3.el7.*
+```
+
+推荐安装
+
+```bash
+dnf install -y docker-ce docker-compose-plugin docker-buildx-plugin
+```
+
+配置 `/etc/docker/daemon.json` 如下
+
+```bash
+cat <<EOF >/etc/docker/daemon.json
+{
+    "debug": false,
+    "insecure-registries": [
+      "0.0.0.0/0"
+    ],
+    "ip-forward": true,
+    "ipv6": false,
+    "live-restore": true,
+    "log-driver": "json-file",
+    "log-level": "warn",
+    "log-opts": {
+      "max-size": "100m",
+      "max-file": "2"
+    },
+    "selinux-enabled": false,
+    "metrics-addr" : "0.0.0.0:9323",
+    "experimental" : true,
+    "storage-driver": "overlay2"
+}
+EOF
 ```
 
 ## systemd unit 文件

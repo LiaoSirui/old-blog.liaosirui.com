@@ -219,3 +219,6 @@ c
 q
 ```
 
+## 参考资料
+
+- 远程调试 <https://cloud.tencent.com/developer/article/2312806>
