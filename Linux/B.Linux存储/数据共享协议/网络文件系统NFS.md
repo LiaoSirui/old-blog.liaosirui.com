@@ -293,26 +293,41 @@ mount -t nfs \
 
 ### Windows 挂载 NFS
 
+1. 打开服务器管理器。
+2. 选择管理 > 添加角色和功能。
+3. 根据添加角色和功能向导提示安装NFS客户端：在功能页签，选择 NFS 客户端。
+4. 启动命令提示符，执行 mount 命令。如果返回以下信息，说明 NFS 客户端安装成功。
 
+![img](./.assets/网络文件系统NFS/p13175.png)
 
+为保证 NFS 挂载后能正常进行读写，需要先添加两个注册表项：进入 `HKEY_LOCAL_MACHINE > SOFTWARE > Microsoft > ClientForNFS > CurrentVersion> Default`，在空白处右键新建 > DWORD(32位)值，创建以下两个注册表项
 
+- AnonymousGID，值为 0
 
-- <https://sf.163.com/help/documents/93857370158059520>
-- <https://help.aliyun.com/zh/nas/user-guide/mount-a-general-purpose-nfs-file-system-on-a-windows-ecs-instance>
+- AnonymousUID，值为 0
+
+若不进行该项修改，NFS 可以挂载，但无法进行读写，输入 mount 命令或查看属性中的 NFS 装载选项，显示 Uid 和 Gid = -2；NFS 服务只允许 root 用户挂载，Windows Server 默认挂载用户为 Anonymous，Uid 为 -2，因此没有权限。解决办法就是让 Windows Server 在挂载 NFS 时将 Uid 和 Gid 改成 0。
+
+完成后重启服务器。
+
+![img](./.assets/网络文件系统NFS/5d12428904a38003ef5855750e18c7a0.png)
+
+在 Windows 客户端，执行以下命令挂载 NFS 协议的文件系统
 
 ```bash
-mount -o nolock -o mtype=hard -o timeout=60 \\file-system-id.region.nas.aliyuncs.com\ S:
+mount -o nolock -o mtype=hard -o timeout=60 \\nas.server.ip_or_domain\somdir S:
 ```
 
-进入HKEY_LOCAL_MACHINE > SOFTWARE > Microsoft > ClientForNFS > CurrentVersion> Default
+可以通过配置 Windows 的`c:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\auto_mount.bat`文件，实现重启时自动挂载 NFS 协议文件系统
 
-在空白处右键新建 > DWORD(32位)值，创建以下两个注册表项
-
-AnonymousGID，值为 0
-
-AnonymousUID，值为 0
-
-NFS 服务只允许 root 用户挂载，Windows Server 默认挂载用户为 Anonymous，Uid 为 -2，因此没有权限。解决办法就是让 Windows Server 在挂载 NFS 时将 Uid 和 Gid 改成 0
+1. 打开控制面板，单击系统和安全，在管理工具区域，单击计划任务。
+2. 在任务计划程序页面，选择操作 > 创建任务。
+3. 单击常规页签，输入计划任务的名称，选中不管用户是否登录都要运行和使用最高权限运行。（如果使用的系统是Windows Server 2016，则必须选中只在用户登录时运行，否则自动挂载 NFS 协议的文件系统配置不生效。）
+4. 单击触发器页签，单击新建。在开始任务列表中选择登录时，在高级设置中选择已启用。单击确定。
+5. 单击操作页签，单击新建。在操作列表中选择启动程序，在程序或脚本中选择步骤 1 创建好的 nas_auto.bat 文件。单击确定。
+6. 单击条件页签，在网络区域，选中只有在以下网络连接可用时才启动。并在下拉框中选择任何连接。
+7. 单击设置页签，选中如果请求后任务还在运行，强行将其停止。在如果此任务已经运行，以下规则适用下拉框中选择请勿启动新实例。
+8. 单击确定。重启服务器，验证创建结果。
 
 若需要卸载共享目录，请使用如下命令：
 

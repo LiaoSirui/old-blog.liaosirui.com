@@ -96,6 +96,14 @@ performance
 |  `powernow_k8`   | CPUFreq driver for K8/K10 Athlon 64/Opteron/Phenom processors. Since Linux 3.7, 'acpi_cpufreq' will automatically be used for more modern AMD CPUs. |
 | `speedstep_lib`  | CPUFreq driver for Intel SpeedStep-enabled processors (mostly Atoms and older Pentiums) |
 
+查看当前的 driver
+
+```bash
+cpupower frequency-info | grep driver
+```
+
+
+
 ## `cpufreq`子系统
 
 - `cpufreq`子系统负责在运行时对CPU频率和电压的动态调整，以达到性能和功耗的平衡，它也叫`DVFS(Dynamic Voltage Frequency Scaling)`。

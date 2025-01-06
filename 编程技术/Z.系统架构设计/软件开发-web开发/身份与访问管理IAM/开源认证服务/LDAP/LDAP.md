@@ -74,6 +74,8 @@ LDAP over TLS 可以简单理解为 ldaps 的升级；它默认使用 389 端口
 ldapsearch -ZZ -H ldap://127.0.0.1
 ```
 
+建议关闭 ldaps 方式，仅开启 LDAP over TLS
+
 ## 参考文档
 
 - <https://wiki.eryajf.net/pages/ea10fa/>
