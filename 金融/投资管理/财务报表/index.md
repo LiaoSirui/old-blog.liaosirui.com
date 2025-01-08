@@ -36,3 +36,13 @@ linkStyle 0 stroke:#f22816,stroke-width:5px;
 linkStyle 1 stroke:#f2b807,stroke-width:5px;
 linkStyle 2 stroke:#233ed9,stroke-width:5px;
 ```
+
+财务报表主要包括三大报表：
+
+- 资产负债表
+- 利润表
+- 现金流量表
+
+> 另外还包括所有者权益变动表
+
+通过报表，投资者可以了解企业财务状况，计算财务比率和分析企业的运营状况、价值和风险特征
