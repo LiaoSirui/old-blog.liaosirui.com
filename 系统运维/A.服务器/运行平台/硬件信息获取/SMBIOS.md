@@ -1,0 +1,74 @@
+## SMBIOS
+
+SMBIOS（ System Management BIOS）是主板或者系统制造商以标准格式显示产品信息所遵循的规范。依据该规范，BIOS 在 POST 阶段可以知道如何去创建。OS 阶段，操作系统和应用程序知道如何使用，解释内存区域表示什么意思
+
+在物理上，SMBIOS 是上电开机，BIOS 在内存中建立的一块区域，保存了平台的相关信息。在 EFI 系统中，SMBIOS 表的地址可以通过 SMBIOS GUID （SMBIOS_TABLE_GUID）在 EFI 配置表（EFI Configuration Table）中找到
+
+SMBIOS 表中 SMBIOS 记录的总数可以从其起始数据结构 （SMBIOS Entry Point Structure）中获得。应用程序可以从 SMBIOS Entry Point Structure 中获得所有 SMBIOS 记录的起始地址，并且通过遍历每一个 SMBIOS 记录来获得各种系统信息
+
+## DMI
+
+dmidecode 是一个读取电脑 DMI（桌面管理接口 Desktop Management Interface）表内容并且以人类可读的格式显示系统硬件信息的工具
+
+## 数据结构信息
+
+SMBIOS EPS 表结构如下：
+
+| 位置   | 名称            | 长度  | 描述                                               |
+| ------ | --------------- | ----- | -------------------------------------------------- |
+| 00H    | 关键字          | 4BYTE | 固定是 "SM"                                        |
+| 04H    | 校验和          | 1BYTE | 用于校验数据                                       |
+| 05H    | 表结构长度      | 1BYTE | Entry Point Structure 表的长度                     |
+| 06H    | Major 版本号    | 1BYTE | 用于判断 SMBIOS 版本                               |
+| 07H    | Minor 版本号    | 1BYTE | 用于判断 SMBIOS 版本                               |
+| 08H    | 表结构大小      | 2BYTE | 用于即插即用接口方法获得数据表结构长度             |
+| 0AH    | EPS 修正        | 1BYTE | -                                                  |
+| 0B-0FH | 格式区域        | 5BYTE | 存放解释 EPS 修正的信息                            |
+| 10H    | 关键字          | 5BYTE | 固定为 "DMI"                                       |
+| 15H    | 校验和          | 1BYTE | Intermediate Entry Point Structure (IEPS) 的校验和 |
+| 16H    | 结构表长度      | 2BYTE | SMBIOS 结构表的长度                                |
+| 18H    | 结构表地址      | 4BYTE | SMBIOS 结构表的真实内存位置                        |
+| 1CH    | 结构表个数      | 2BYTE | SMBIOS 结构表数目                                  |
+| 1EH    | SMBIOS BCD 修正 | 1BYTE | -                                                  |
+
+通过 EPS 表结构中 16H 以及 18H 处，得出数据表长度和数据表地址，即可通过地址访问 SMBIOS 数据结构表。从 EPS 表中的 1CH 处可得知数据表结构的总数，其中 TYPE 0 结构就是 BIOS information ， TYPE 1 结构就是 SYSTEM Information 。
+
+每个结构的头部是相同的，格式如下：
+
+| 位置 | 名称    | 长度  | 描述                                 |
+| ---- | ------- | ----- | ------------------------------------ |
+| 00H  | TYPE 号 | 1BYTE | 结构的 TYPE 号                       |
+| 01H  | 长度    | 1BYTE | 本结构的长度，就此 TYPE 号的结构而言 |
+| 02H  | 句柄    | 2BYTE | 用于获得本 SMBIOS 结构，其值不定     |
+
+每个结构都分为格式区域和字符串区域，格式区域就是一些本结构的信息，字符串区域是紧随在格式区域后的一个区域。结构 01H 处标识的结构长度仅是格式区域的长度，字符串区域的长度是不固定的。有的结构有字符串区域，有的则没有。
+
+下面以 TYPE 0 （ BIOS information ）为例说明格式区域和字符串区域的关系。 TYPE 0 （ BIOS information ）格式区域如下：
+
+| 位置 | 名称            | 长度  | 描述                                                         |
+| ---- | --------------- | ----- | ------------------------------------------------------------ |
+| 00H  | TYPE 号         | 1BYTE | 结构的 TYPE 号，此处是0                                      |
+| 01H  | 长度            | 1BYTE | TYPE 0 格式区域的长度，一般为14H ，也有 13H                  |
+| 02H  | 句柄            | 2BYTE | 本结构的句柄，一般为0000H                                    |
+| 04H  | BIOS 厂商信息   | 1BYTE | 此处是 BIOS 卖方的信息，可能是 OEM 厂商名，一般为 01H ，代表紧随格式区域后的字符串区域的第一个字符串 |
+| 05H  | BIOS 版本       | 1BYTE | BIOS 版本号，一般为 02H ，代表字符串区域的第二个字符串       |
+| 06H  | BIOS 开始地址段 | 2BYTE | 用于计算常驻BIOS 镜像大小的计算，方法为（10000H-BIOS 开始地址段）×16 |
+| 08H  | BIOS 发布日期   | 1BYTE | 一般为03H ，表示字符区第三个字符串                           |
+| 09H  | BIOS rom size   | 1BYTE | 计算方法为（n ＋1 ）×64K ，n 为此处读出数值                  |
+| 0AH  | BIOS 特征       | 8BYTE | BIOS 的功能支持特征，如 PCI,PCMCIA,FLASH 等                  |
+| 12H  | BIOS 特征扩展   | 不定  | -                                                            |
+
+## 参考资料
+
+项目
+
+- <https://github.com/siderolabs/go-smbios>
+
+资料
+
+- <https://blog.51cto.com/u_12968/6990334>
+- <https://blog.csdn.net/zhoudaxia/article/details/5919699>
+- <https://blog.csdn.net/zhoudaxia/article/details/5919871>
+- <https://blog.csdn.net/zhoudaxia/article/details/5919967>
+
+- <https://blog.51cto.com/u_16099321/8029247>

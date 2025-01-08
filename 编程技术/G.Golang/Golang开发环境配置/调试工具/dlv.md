@@ -219,6 +219,59 @@ c
 q
 ```
 
+## 远程调试
+
+远程服务器安装 dlv
+
+```bash
+go install github.com/go-delve/delve/cmd/dlv@latest
+```
+
+在本地服务器编译
+
+```bash
+go build -gcflags="all=-N -l" ./cmd/cmdb-node-detector
+```
+
+在服务器上启动 Delve
+
+```bash
+dlv --headless --listen=:2345 --log exec ./cmdb-node-detector
+# --accept-multiclient
+```
+
+配置 Visual Studio Code
+
+```json
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch file",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${file}"
+        },
+        {
+            "name": "Connect to server",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            // "remotePath": "${workspaceFolder}",
+            "host": "192.168.248.102",
+            "port": 2345,
+        }
+    ]
+}
+
+```
+
+在 Visual Studio Code 中，打开刚才编辑的`launch.json`文件，选择 “Connect to server”，然后按下 F5 开始调试
+
 ## 参考资料
 
 - 远程调试 <https://cloud.tencent.com/developer/article/2312806>
