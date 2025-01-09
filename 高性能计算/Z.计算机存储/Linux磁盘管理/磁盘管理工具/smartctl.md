@@ -152,3 +152,5 @@ ID18-25：Temperature Sensor X：多个温度传感器（若存在）的读数
 ## 参考资料
 
 - <https://blog.csdn.net/qq_24343177/article/details/122521952>
+
+- <https://www.cnblogs.com/dewan/p/18228750>

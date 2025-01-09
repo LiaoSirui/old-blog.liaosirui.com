@@ -10,6 +10,10 @@ SMBIOS 表中 SMBIOS 记录的总数可以从其起始数据结构 （SMBIOS Ent
 
 dmidecode 是一个读取电脑 DMI（桌面管理接口 Desktop Management Interface）表内容并且以人类可读的格式显示系统硬件信息的工具
 
+## UUID
+
+在计算机硬件管理中，System Management BIOS (SMBIOS) 是一种标准，用于描述和识别计算机硬件。 其中，每个设备都会被分配一个唯一的 Universally Unique Identifier (UUID)，用于标识这个设备
+
 ## 数据结构信息
 
 SMBIOS EPS 表结构如下：
