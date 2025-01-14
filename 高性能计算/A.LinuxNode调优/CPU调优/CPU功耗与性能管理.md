@@ -128,3 +128,5 @@ TDP 表示的处理器运行在基频时的平均功耗（average power）
 - <https://arthurchiao.art/blog/linux-cpu-2-zh/>
 
 - <https://blog.csdn.net/xiaofeng_yan/article/details/108969545>
+
+- <https://blog.mygraphql.com/zh/notes/low-tec/kernel/cpu-frequency/>

@@ -84,30 +84,63 @@ id=login_word
 
 ```javascript
 [
-  {
-    "step": 1,
-    "value": "{USERNAME}",
-    "target": "id=username",
-    "command": "type"
-  },
-  {
-    "step": 2,
-    "value": "",
-    "target": "id=hide_pwd",
-    "command": "click"
-  },
-  {
-    "step": 3,
-    "value": "{SECRET}",
-    "target": "id=platcontent",
-    "command": "type"
-  },
-  {
-    "step": 4,
-    "value": "",
-    "target": "id=btn_login-button",
-    "command": "click"
-  }
+    {
+        "step": 1,
+        "value": "{USERNAME}",
+        "target": "id=username",
+        "command": "type"
+    },
+    {
+        "step": 2,
+        "value": "",
+        "target": "id=hide_pwd",
+        "command": "click"
+    },
+    {
+        "step": 3,
+        "value": "{SECRET}",
+        "target": "id=platcontent",
+        "command": "type"
+    },
+    {
+        "step": 4,
+        "value": "",
+        "target": "id=btn_login-button",
+        "command": "click"
+    }
 ]
+
+```
+
+Nexus
+
+```javascript
+[
+    {
+        "step": 1,
+        "value": "",
+        "target": "id=nx-header-signin-1151-btnEl",
+        "command": "click"
+    },
+    {
+        "step": 2,
+        "value": "{USERNAME}",
+        "target": "id=textfield-1291-inputEl",
+        "command": "type"
+    },
+    {
+        "step": 3,
+        "value": "{SECRET}",
+        "target": "id=textfield-1292-inputEl",
+        "command": "type"
+    },
+    {
+        "step": 4,
+        "value": "",
+        "target": "id=button-1294-btnEl",
+        "command": "click"
+    }
+]
+
 ```
 

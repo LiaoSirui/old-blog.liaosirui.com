@@ -28,3 +28,19 @@ cpupower idle-info
 cpupower idle-set -D 0
 ```
 
+频率调节器
+
+```bash
+# 查看当前的调节器
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
+# 查看频率信息
+cpupower frequency-info
+```
+
+使用  stress 压测
+
+```bash
+stress -c 100
+```
+
