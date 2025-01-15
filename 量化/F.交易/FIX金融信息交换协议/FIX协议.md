@@ -5,5 +5,3 @@ FIX（Financial Information eXchange Protocol，金融信息交换协议）是�
 ## 参考资料
 
 - <https://blog.csdn.net/A642960662/article/details/123028370>
-
-- <https://github.com/mcxiaoke/mqtt>

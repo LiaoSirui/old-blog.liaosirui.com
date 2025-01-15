@@ -25,3 +25,5 @@ QUIC 桥接具有以下独特的优势和特性：
 ## 参考资料
 
 - <https://mcxiaoke.gitbooks.io/mqtt-cn/content/mqtt/01-Introduction.html>
+
+- <https://github.com/mcxiaoke/mqtt>
