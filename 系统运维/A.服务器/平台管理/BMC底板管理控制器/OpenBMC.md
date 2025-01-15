@@ -12,7 +12,11 @@ OpenBMC 是一个开源的项目，用于开发 BMC 固件
 - Xilinx
 - NXP
 
+## KCS
 
+Keyboard Controller Style (KCS) Interface
+
+系统（BIOS 和 OS）和 BMC 通信的一种基本方式
 
 ## 参考资料
 
@@ -21,3 +25,9 @@ OpenBMC 是一个开源的项目，用于开发 BMC 固件
 - <https://blog.csdn.net/qq_34160841/article/details/115430387>
 - <https://www.cnblogs.com/arvin-blog/p/15690416.html>
 - <https://www.cnblogs.com/servlet-context/p/18368243>
+
+- <http://www.360doc.com/content/22/0315/17/21412_1021659567.shtml>
+
+- <https://www.gaitpu.com/data-center/server/openbmc-versus-traditional-bmc>
+
+- <https://blog.csdn.net/yjj350418592/article/details/121836729>

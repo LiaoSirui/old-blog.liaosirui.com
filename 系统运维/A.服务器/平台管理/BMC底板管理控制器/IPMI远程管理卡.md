@@ -44,12 +44,26 @@ BIOS 建议额外设置断电后 USB 仍然供电，通常是华硕主板：
 
 ### 操作系统设置
 
+安装 OpenIPMI
+
+```bash
+dnf install OpenIPMI
+
+systemctl enalbe --now ipmi
+```
+
+
+
 加载内核模块
 
 ```bash
 modprobe ipmi_devintf
 modprobe ipmi_si
 modprobe ipmi_ssif
+
+rmmod ipmi_si && modprobe -v ipmi_si type=kcs ports=0xca8,0xca2 trydefaults=1
+
+rmmod ipmi_si && modprobe -v ipmi_si type="kcs" ports="0xca2" regspacings="4"
 ```
 
 ### 官方资料
