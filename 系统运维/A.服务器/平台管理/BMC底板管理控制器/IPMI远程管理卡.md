@@ -57,11 +57,15 @@ systemctl enalbe --now ipmi
 加载内核模块
 
 ```bash
+cat /proc/devices | grep ipmi
+mknod /dev/ipmi0 c 238 0x0
+
 modprobe ipmi_devintf
+modprobe ipmi_msghandler
+modprobe ipmi_poweroff
 modprobe ipmi_si
 modprobe ipmi_ssif
-
-rmmod ipmi_si && modprobe -v ipmi_si type=kcs ports=0xca8,0xca2 trydefaults=1
+modprobe ipmi_watchdog
 
 rmmod ipmi_si && modprobe -v ipmi_si type="kcs" ports="0xca2" regspacings="4"
 ```
