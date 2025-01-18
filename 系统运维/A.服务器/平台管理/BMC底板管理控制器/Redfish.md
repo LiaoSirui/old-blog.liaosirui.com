@@ -10,6 +10,10 @@ curl -i -k --request POST -H "Content-Type: application/json" -d '{"UserName" : 
 
 
 
+- python-redfish-library: A python library used by a number of tools <https://github.com/DMTF/python-redfish-library>
+- Redfish-Event-Listener: An example client for testing and implementing EventService handlers <https://github.com/DMTF/Redfish-Event-Listener>
+- Redfish-Tacklebox: A collection of common utilities for managing redfish servers <https://github.com/DMTF/Redfish-Tacklebox>
+
 ## 参考资料
 
 - <https://blog.csdn.net/sinat_36458870/article/details/124728301>

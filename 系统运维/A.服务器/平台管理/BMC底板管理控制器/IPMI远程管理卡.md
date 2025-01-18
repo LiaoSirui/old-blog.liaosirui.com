@@ -70,6 +70,12 @@ modprobe ipmi_watchdog
 rmmod ipmi_si && modprobe -v ipmi_si type="kcs" ports="0xca2" regspacings="4"
 ```
 
+重置密码
+
+```bash
+ipmitool -I ms raw 0x32 0x66
+```
+
 ### 官方资料
 
 华硕支持：<https://www.asus.com.cn/supportonly/ipmi%20expansion%20card/helpdesk_knowledge/>
