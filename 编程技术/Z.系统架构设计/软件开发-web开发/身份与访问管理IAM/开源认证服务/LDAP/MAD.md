@@ -16,6 +16,36 @@
 - ADSI 编辑器 微软自带，输入 `adsiedit.msc` 可访问
 - ADExplorer ，<https://docs.microsoft.com/en-us/sysinternals/downloads/adexplorer>
 
+## 域服务器管理
+
+查看主域控所有节点
+
+```bash
+netdom query fsmo
+```
+
+查看所有域控服务器信息
+
+```bash
+nltest /dclist:alpha-quant.tech
+```
+
+查看客户端通过哪台域服务器进行验证登录
+
+```basg
+set logonserver
+```
+
+域服务器同步异常排查
+
+可以通过 dcdiag、repadmin 等命令进行排查
+
+```bash
+dcdiag
+```
+
+### 域控制器配置支持 FAST 身份验证
+
 ## 操作域
 
 ### 客户端查看
@@ -82,31 +112,31 @@ dsquery ou
 dsquery computer
 ```
 
-查询最近1周没有活动的用户：
+查询最近 1 周没有活动的用户：
 
 ```powershell
 dsquery user -inactive 1
 ```
 
-查询最近1周没有活动的计算机：
+查询最近 1 周没有活动的计算机：
 
 ```powershell
 dsquery computer -inactive 1
 ```
 
-查询30天未变更密码的计算机：
+查询 30 天未变更密码的计算机：
 
 ```powershell
 dsquery computer -stalepwd 30
 ```
 
-禁用最近4周没有活动的计算机：
+禁用最近 4 周没有活动的计算机：
 
 ```powershell
 dsquery computer -inactive 4 | dsmod computer -disable yes
 ```
 
-禁用最近4周没有登陆的用户：
+禁用最近 4 周没有登陆的用户：
 
 ```powershell
 dsquery user -inactive 4 | dsmod user -disabled yes
@@ -114,7 +144,7 @@ dsquery user -inactive 4 | dsmod user -disabled yes
 
 ### 加入 AD 域
 
-把计算机 `zhangsan-pc`，加入到 `msh.local` 域，30秒后重启
+把计算机 `zhangsan-pc`，加入到 `msh.local` 域，30 秒后重启
 
 ```powershell
 netdom join zhangsan-pc /domain:msh.local /UserD:sh.it /PasswordD:P@ssw0rd /reboot:30
@@ -207,4 +237,9 @@ w32tm /config /manualpeerlist:[NTP_IP] /syncfromflags:manual /reliable:yes /upda
 ```
 
 在上面打开的界面中，输入域名\用户名、旧密码、2 次新密码，点击修改测试
+
+## 参考资料
+
+- Active Directory 域服务迁移 <https://learn.microsoft.com/zh-cn/training/modules/active-directory-domain-services-migration/>
+- <https://blog.csdn.net/yleihj/article/details/127065802>
 
