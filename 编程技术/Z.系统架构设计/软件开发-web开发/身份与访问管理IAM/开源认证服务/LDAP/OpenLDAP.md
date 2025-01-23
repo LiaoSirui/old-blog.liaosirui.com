@@ -181,24 +181,38 @@ LDAPTLS_CACERT=$PWD/certs/openldap.crt ldappasswd \
 
 ## LDAP 管理面板
 
-```bash
-services:
-  ldap-account-manager:
-    image: ghcr.io/ldapaccountmanager/lam:9.0
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    environment:
-      - LAM_PASSWORD=${LAM_PASSWORD}
-      - LAM_LANG=en_US
-      - LDAP_SERVER=${LDAP_SERVER}
-      - LDAP_DOMAIN=${LDAP_DOMAIN}
-      - LDAP_BASE_DN=${LDAP_BASE_DN}
-      - LDAP_USER=cn=admin,${LDAP_BASE_DN}
-      - VIRTUAL_HOST=ldap-admin.alpha-quant.tech
-      - VIRTUAL_PORT=80
-    hostname: ldap-account-manager
+- <https://www.ldapbrowsermac.com/>
 
+- 备选：<https://directory.apache.org/studio/downloads.html>
+
+```bash
+brew install apache-directory-studio
+```
+
+遇到错误
+```
+The JVM shared library "/Library/Java/JavaVirtualMachines/jdk-23.jdk/Contents/Home/bin/../lib/server/libjvm.dylib"
+does not contain the JNI_CreateJavaVM symbol.
+```
+
+Apache Directory version : ApacheDirectoryStudio-2.0.0.v20210717-M17 [Link to download](https://dlcdn.apache.org/directory/studio/2.0.0.v20210717-M17/ApacheDirectoryStudio-2.0.0.v20210717-M17-macosx.cocoa.x86_64.dmg)
+
+Java Version : jdk-17.0.8+7 [Link to Download](https://adoptium.net/temurin/releases/?version=17)
+
+Update the Info.plist File Location :
+
+> `/Applications/ApacheDirectoryStudio.app/Contents/Info.plist`
+
+```xml
+    <array>
+            
+  <!-- to use a specific Java version (instead of the platform's default) uncomment one of the following options,
+                or add a VM found via $/usr/libexec/java_home -V -->
+  <string>-vm</string><string>/Users/XXXXXXXX/dev/app/jdk-17.0.8+7/Contents/Home/bin/java</string>
+  <string>-keyring</string>
+  <string>~/.eclipse_keyring</string>
+        
+</array>
 ```
 
 ## 自助修改密码系统
