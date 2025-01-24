@@ -42,3 +42,7 @@ IPconfig /registerdns
 如提示说系统没有这个命令，就在 PowerShell 里面运行 `Add-WindowsFeature RSAT-DFS-Mgmt-Con` 来安装一下它
 
 在 ADSI Edit 里把 AD1 和 AD2 的 msDFSR-Enabled 把它的值由 False 改成 True，再次运行上面的 powershell 语句，然后再运行 `dfsrdiag PollAD`
+
+参考资料：
+
+- <https://bobwang1.wordpress.com/2021/07/30/%E8%A7%A3%E5%86%B3dc%E4%B8%A2%E5%A4%B1sysvol%E5%92%8Cnetlogon%E5%85%B1%E4%BA%AB%E4%BB%A5%E5%8F%8A%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E5%87%BA%E7%8E%B0%E9%9A%9C%E7%A2%8D%E7%9A%84%E4%B8%80%E7%B3%BB/>
