@@ -12,7 +12,7 @@ TailScale 你可以理解为 VPN，或者说 Wireguard 外面包了一层壳子�
 
 ![img](.assets/Tailscale/Rje9yw.jpg)
 
-那么我们就会想，能不能让节点间直接互联呢？ 这就是 mesh VPN，其实现就是 wireguard
+那么，能不能让节点间直接互联呢？ 这就是 mesh VPN，其实现就是 wireguard
 
 ![img](.assets/Tailscale/pQ8X8e.jpg)
 
@@ -121,24 +121,67 @@ Tailscale 使用的算法很有趣，所有客户端之间的连接都是先选�
 ```yaml
 services:
   headscale:
-    image: docker.io/headscale/headscale:0.24.0
+    image: docker.io/headscale/headscale:${HEADSCALE_VERSION}
+    restart: always
     volumes:
-      - ./headscale/config:/etc/headscale
-      - ./headscale/data:/var/lib/headscale
-    network_mode: "host"
+      - "./headscale/config:/etc/headscale"
+      - "./headscale/data:/var/lib/headscale"
+    environment:
+      TZ: Asia/Shanghai
     command:
       - serve
-    restart: always
+    network_mode: "host"
     # networks:
     #   - tailscale
     # ports:
     #   - 8080:8080
+  headplane:
+    image: ghcr.io/tale/headplane:${HEADPLANE_VERSION}
+    restart: always
+    volumes:
+      - "./headscale/config:/etc/headscale"
+      - "./headscale/data:/var/lib/headscale"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      TZ: Asia/Shanghai
+      COOKIE_SECRET: "${COOKIE_SECRET}"
+      HEADSCALE_PUBLIC_URL: "${HEADSCALE_PUBLIC_URL}"
+      HEADSCALE_INTEGRATION: 'docker'
+      HEADSCALE_CONTAINER: 'headscale'
+      HOST: '0.0.0.0'
+      PORT: '3000'
+      COOKIE_SECURE: 'false'
+      ROOT_API_KEY: ${ROOT_API_KEY}
+    networks:
+      - tailscale
+    ports:
+      - 3000:3000
+  derper:
+    image: ghcr.io/fredliang44/derper:v${DERP_VERSION}
+    volumes:
+      - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      - ./derper/certs:/app/certs
+    # network_mode: "host"
+    restart: always
+    environment:
+      DERP_DOMAIN: derp-bj-jdcloud.liaosirui.com
+      DERP_CERT_MODE: manual
+      DERP_CERT_DIR: /app/certs
+      DERP_ADDR: :19851
+      DERP_VERIFY_CLIENTS: true
+    networks:
+      - tailscale
+    ports:
+      - 3478:3478/udp
+      - 19850:80
+      - 19851:19851
 networks:
   tailscale:
     ipam:
       driver: default
       config:
         - subnet: "172.29.1.0/24"
+
 ```
 
 下载镜像
@@ -226,79 +269,12 @@ headscale user list
 
 ### 可视化界面
 
-<https://github.com/GoodiesHQ/headscale-admin>
+<https://github.com/tale/headplane>
 
 需要通过 API Key 来接入 Headscale，所以在使用之前需要先创建一个 API key
 
 ```bash
 headscale apikey create
-```
-
-部署
-
-```yaml
-services:
-  headscale:
-    image: docker.io/headscale/headscale:0.24.0
-    volumes:
-      - ./headscale/config:/etc/headscale
-      - ./headscale/data:/var/lib/headscale
-    network_mode: "host"
-    command: 
-      - serve
-    restart: always
-    # networks:
-    #   - tailscale
-    # ports:
-    #   - 8080:8080
-  headscale-admin:
-    image: docker.io/goodieshq/headscale-admin:0.1.12b
-    restart: always
-    networks:
-      - tailscale
-    ports:
-      - 16080:80
-networks:
-  tailscale:
-    ipam:
-      driver: default
-      config:
-        - subnet: "172.29.1.0/24"
-```
-
-（未解决 CORS，外面加一层 Nginx）
-
-```nginx
-location / {
-    proxy_pass http://127.0.0.1:8080;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "$connection_upgrade";
-}
-
-location /admin/ {
-    proxy_pass http://127.0.0.1:16080;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "$connection_upgrade";
-}
-```
-
-拉取镜像
-
-```bash
-docker-pull() {
-  skopeo copy docker://${1} docker-daemon:${1}
-}
-docker-pull "docker.io/goodieshq/headscale-admin:0.1.12b"
 ```
 
 访问 `<ip:port>/admin`
