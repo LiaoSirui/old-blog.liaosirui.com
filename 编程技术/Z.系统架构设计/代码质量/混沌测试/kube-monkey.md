@@ -11,12 +11,7 @@ Kube-monkey 由 TOML 文件配置，可在其中指定要杀死的应用程序�
 ```bash
 git clone https://github.com/asobti/kube-monkey.git
 
-
-
 cd kube-monkey
-
-
-
 helm install --name kube-monkey helm/kubemonkey
 ```
 
