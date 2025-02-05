@@ -76,6 +76,16 @@ ldapsearch -ZZ -H ldap://127.0.0.1
 
 建议关闭 ldaps 方式，仅开启 LDAP over TLS
 
+## URLlist
+
+| **URL**      | **Protocol**          | **Transport**            |
+| ------------ | --------------------- | ------------------------ |
+| `ldap:///`   | LDAP                  | TCP port 389             |
+| `pldap:///`  | proxied LDAP          | TCP port 389             |
+| `ldaps:///`  | LDAP over SSL         | TCP port 636             |
+| `pldaps:///` | proxied LDAP over SSL | TCP port 636             |
+| `ldapi:///`  | LDAP                  | IPC (Unix-domain socket) |
+
 ## 参考文档
 
 - <https://wiki.eryajf.net/pages/ea10fa/>

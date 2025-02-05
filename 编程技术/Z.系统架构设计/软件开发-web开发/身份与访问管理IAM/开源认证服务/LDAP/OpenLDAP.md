@@ -67,7 +67,7 @@ networks:
 admin 密码建议单独保存，例如写在 `.env` 中：
 
 ```bash
-IMAGE_VERSION=2.6.9-debian-12-r1
+IMAGE_VERSION=2.6.9-debian-12-r3
 
 LDAP_ADMIN_USERNAME=admin
 LDAP_ADMIN_PASSWORD=12345678REDACTED
@@ -80,7 +80,7 @@ docker compose exec -T openldap ldapmodify -Y EXTERNAL -H "ldapi:///" << __EOF__
 dn: cn=config
 changetype: modify
 add: olcTLSProtocolMin
-olcTLSProtocolMin: 3.1
+olcTLSProtocolMin: 3.3
 
 __EOF__
 ```
@@ -181,39 +181,7 @@ LDAPTLS_CACERT=$PWD/certs/openldap.crt ldappasswd \
 
 ## LDAP 管理面板
 
-- <https://www.ldapbrowsermac.com/>
 
-- 备选：<https://directory.apache.org/studio/downloads.html>
-
-```bash
-brew install apache-directory-studio
-```
-
-遇到错误
-```
-The JVM shared library "/Library/Java/JavaVirtualMachines/jdk-23.jdk/Contents/Home/bin/../lib/server/libjvm.dylib"
-does not contain the JNI_CreateJavaVM symbol.
-```
-
-Apache Directory version : ApacheDirectoryStudio-2.0.0.v20210717-M17 [Link to download](https://dlcdn.apache.org/directory/studio/2.0.0.v20210717-M17/ApacheDirectoryStudio-2.0.0.v20210717-M17-macosx.cocoa.x86_64.dmg)
-
-Java Version : jdk-17.0.8+7 [Link to Download](https://adoptium.net/temurin/releases/?version=17)
-
-Update the Info.plist File Location :
-
-> `/Applications/ApacheDirectoryStudio.app/Contents/Info.plist`
-
-```xml
-    <array>
-            
-  <!-- to use a specific Java version (instead of the platform's default) uncomment one of the following options,
-                or add a VM found via $/usr/libexec/java_home -V -->
-  <string>-vm</string><string>/Users/XXXXXXXX/dev/app/jdk-17.0.8+7/Contents/Home/bin/java</string>
-  <string>-keyring</string>
-  <string>~/.eclipse_keyring</string>
-        
-</array>
-```
 
 ## 自助修改密码系统
 
