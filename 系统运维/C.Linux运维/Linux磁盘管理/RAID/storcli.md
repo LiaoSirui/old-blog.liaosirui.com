@@ -28,9 +28,18 @@ MegaCLI 和 StorCLI 是 Broadcom（原 LSI）提供的两种命令行工具，�
 
 找到官方最新版本：<https://www.broadcom.com/site-search?page=1&per_page=10&q=storcli&sort_direction[pages]=desc&sort_field[pages]=sort_date>
 
+<https://docs.broadcom.com/docs-and-downloads/008.0011.0000.0014_MR%208.11_Storcli2.zip>
+
 ```bash
 update-alternatives --install /usr/bin/storcli64 storcli64 /opt/MegaRAID/storcli/storcli64 1
 update-alternatives --set storcli64 /opt/MegaRAID/storcli/storcli64
+```
+
+esxi 安装
+
+```
+esxcli software acceptance set --level=CommunitySupported
+esxcli software vib install -v /tmp/BCM_bootbank_storcli_007.2414.0000.0000-01.vib
 ```
 
 ## StorCLI 使用
@@ -122,8 +131,6 @@ storcli /c0/e0/s23 start locate     # 开启 /c0/e0/s23 的硬盘灯
 storcli /c0/e0/s23 stop locate      # 关闭 /c0/e0/s23 的硬盘灯
 ```
 
-
-
 创建阵列
 
 ```bash
@@ -139,8 +146,26 @@ storcli /c0 add vd r10 size=all drives=251:2-13 pdperarray=2 Strip=128 wb
 - （Strip=128）设置 RAID 组条带大小，单位为 KB
 - （wb）WriteBack wb：控制卡 Cache 收到所有的传输数据后，将给主机返回数据传输完成信号；wt：当硬盘子系统接收到所有传输数据后，控制卡将给主机返回数据传输完成信号
 
+创建 raid5 和 hot spare
+
+```bash
+# 创建 RAID 5：
+storcli /c0 add vd type=raid5 size=all names=raid5g1 drives=252:0-2
+
+# 配置写策略为 “Always Write Back”：
+storcli /c0 /v0 set wrcache=AWB
+
+# 配置 I/O 策略为 “Cached”：
+storcli /c0 /v0 set iopolicy=Cached
+
+# 将 252:3 分配为热备份磁盘：
+storcli /c0/e252/s3 add hotsparedrive DGs=0
+```
+
 ## 参考资料
 
 - <https://www.cnblogs.com/luxf0/p/17630732.html>
 
 - <https://www.cnblogs.com/zhangxinglong/p/9771967.html>
+
+- <https://www.cnblogs.com/xzongblogs/p/14700443.html>

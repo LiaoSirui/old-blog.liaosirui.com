@@ -16,7 +16,7 @@ DN（Distinguished Name），专有名称，LDAP中对象的唯一路径，一�
 
 ![img](./.assets/LDAP/dit.png)
 
-### LDAP解析
+### LDAP 解析
 
 举例，如果张三在 A 公司（hello.org）的 IT 部门，那么张三的 DN 为`CN=ZhangSan,OU=ITDepartment,DC=hello,DC=org`，查找顺序则由 DC 到 CN，即：
 
