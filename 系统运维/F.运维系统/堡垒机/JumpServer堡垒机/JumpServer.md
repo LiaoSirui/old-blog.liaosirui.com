@@ -52,6 +52,26 @@ helm repo add jumpserver https://jumpserver.github.io/helm-charts
 
 官方文件：<https://docs.jumpserver.org/zh/master/admin-guide/authentication/openid/>
 
+### MFA
+
+清理所有 MFA
+
+```python
+from users.models import User
+receivers = User.objects.values_list("username", flat=True)
+all_users = []
+for r in receivers:
+    if '.' in r:
+        all_users.append(r)
+
+for u_name in all_users:
+    u = User.objects.get(username=u_name)
+    u.mfa_level='0'
+    u.otp_secret_key=''
+    u.save()
+
+```
+
 ## 参考资料
 
 - Jumpserver安全一窥：Sep系列漏洞深度解析 <https://www.leavesongs.com/PENETRATION/jumpserver-sep-2023-multiple-vulnerabilities-go-through.html>

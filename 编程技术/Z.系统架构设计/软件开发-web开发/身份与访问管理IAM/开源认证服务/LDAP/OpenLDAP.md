@@ -202,5 +202,4 @@ ldapmodify -Y EXTERNAL -H ldapi:/// -f updatepass.ldif
 
 - <http://114.242.246.250:8036/basetool/ldap.html>
 
-
-
+- OpenLDAP 基础概念 <https://ldapdoc.eryajf.net/pages/17ba17/#%E5%9F%BA%E7%A1%80%E5%AD%97%E6%AE%B5>
