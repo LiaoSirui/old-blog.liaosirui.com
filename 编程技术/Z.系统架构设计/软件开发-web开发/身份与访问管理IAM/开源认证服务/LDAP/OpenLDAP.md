@@ -373,8 +373,6 @@ LDAPTLS_CACERT=$PWD/certs/openldap.crt ldappasswd \
 
 ## LDAP 管理面板
 
-
-
 ## 自助修改密码系统
 
 问题解决，添加命令如下：
@@ -391,8 +389,6 @@ ldapmodify -Y EXTERNAL -H ldapi:/// -f updatepass.ldif
 ## 用户和组管理
 
 ### 创建用户
-
-
 
 ## 参考资料
 

@@ -18,6 +18,12 @@ modules:
 
 ```
 
+二进制添加 cap
+
+```bash
+setcap cap_net_raw+ep /bin/blackbox_exporter
+```
+
 示例
 
 ```yaml

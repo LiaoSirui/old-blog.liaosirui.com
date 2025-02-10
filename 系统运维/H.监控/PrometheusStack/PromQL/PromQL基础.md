@@ -1,8 +1,8 @@
-目录列表：
+## 目录列表
 
-- [PromQL操作符](PromQL操作符.md)
-- [PromQL聚合操作](PromQL聚合操作.md)
--  [PromQL内置函数](PromQL内置函数.md)
+- PromQL 操作符
+- PromQL 聚合操作
+- PromQL 内置函数
 
 ## 嵌套结构
 

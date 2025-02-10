@@ -52,8 +52,6 @@ dnf install OpenIPMI
 systemctl enalbe --now ipmi
 ```
 
-
-
 加载内核模块
 
 ```bash
