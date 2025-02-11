@@ -224,25 +224,38 @@ chown -R 1001:root certs
 ```yaml
 services:
   openldap:
-    image: docker.io/bitnami/openldap:${IMAGE_VERSION}
+    image: harbor.alpha-quant.tech/3rd/docker.io/bitnami/openldap:2.6.9-debian-12-r3
     ports:
-      - '389:389' # LDAP
-      - '636:636' # LDAPS
+      - "389:389" # LDAP
+      # - '636:636' # LDAPS
     environment:
       - LDAP_PORT_NUMBER=389
       - LDAP_LDAPS_PORT_NUMBER=636
       - LDAP_ADMIN_USERNAME=${LDAP_ADMIN_USERNAME}
       - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}
+      - LDAP_USERS=${LDAP_USERS}
+      - LDAP_PASSWORDS=${LDAP_PASSWORDS}
       - LDAP_ROOT=DC=alpha-quant,DC=tech
-      - LDAP_ADMIN_DN=CN=admin,DC=alpha-quant,DC=tech
+      - LDAP_ADMIN_DN=CN=${LDAP_ADMIN_USERNAME},DC=alpha-quant,DC=tech
       - LDAP_ALLOW_ANON_BINDING=no
       - LDAP_ENABLE_TLS=yes
+      - LDAP_REQUIRE_TLS=no
       - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/alpha-quant.tech.crt
       - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/alpha-quant.tech.key
       - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/alpha-quant.tech.CA.crt
+      - LDAP_TLS_DH_PARAMS_FILE=/opt/bitnami/openldap/certs/slapd.dh.params
     volumes:
       - ./certs:/opt/bitnami/openldap/certs
-      - ./openldap:/bitnami/openldap
+      - ./ldifs:/extra-ldifs
+      - ${DATA_DIR}:/bitnami/openldap
+    networks:
+      - openldap
+  phpldapadmin:
+    image: harbor.alpha-quant.tech/infra/portal/openldap-pla:main-ecec623-250208171404
+    depends_on:
+      - openldap
+    ports:
+      - "11080:80"
     networks:
       - openldap
 networks:
@@ -251,18 +264,22 @@ networks:
     ipam:
       driver: default
       config:
-      - subnet: 172.30.1.0/24
-        gateway: 172.30.1.254
+        - subnet: 172.28.1.0/24
+          gateway: 172.28.1.254
 
 ```
 
 admin 密码建议单独保存，例如写在 `.env` 中：
 
 ```bash
-IMAGE_VERSION=2.6.9-debian-12-r3
-
-LDAP_ADMIN_USERNAME=admin
+LDAP_ADMIN_USERNAME=sys-admin
 LDAP_ADMIN_PASSWORD=12345678REDACTED
+
+LDAP_USERS=sys-reader
+LDAP_PASSWORDS=12345678REDACTED
+
+DATA_DIR=/mnt/data-hdd1/openldap
+
 ```
 
 指定最小 TLS 证书版本
@@ -306,7 +323,7 @@ ldapwhoami \
 ldapwhoami \
     -H ldap://ldap.alpha-quant.tech:389/ \
     -x \
-    -Z \
+    -ZZ \
     -D "cn=admin,dc=alpha-quant,dc=tech" \
     -W \
     -o TLS_CACERT="$PWD/certs/alpha-quant.tech.CA.crt"

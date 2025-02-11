@@ -23,6 +23,13 @@ chmod a+x ./setup.sh
 docker compose exec -ti mailserver setup email add postmaster@alpha-quant.tech
 ```
 
+## DNS 测试
+
+```bash
+```
+
+
+
 ## 个性化设置
 
 - `Catch-All`
@@ -61,3 +68,9 @@ smtpd_helo_required=no
 smtpd_helo_restrictions=
 ```
 
+## 参考资料
+
+- <https://www.treesir.pub/post/docker-deploy-mailserver/>
+- <https://juejin.cn/post/7260767425729642556>
+
+- <https://blog.stellaris.wang/p/experience/mail-server/>

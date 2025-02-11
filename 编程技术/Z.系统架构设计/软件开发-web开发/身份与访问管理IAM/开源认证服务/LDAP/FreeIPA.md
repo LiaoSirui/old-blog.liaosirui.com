@@ -1,0 +1,1 @@
+FreeIPA 是一个用于 Linux/Unix 环境的开源身份管理系统，它提供集中式的账号管理和身份验证，其集成 389 目录服务器（一种 LDAP 实现）、NTP、DNS、MIT Kerberos 等
