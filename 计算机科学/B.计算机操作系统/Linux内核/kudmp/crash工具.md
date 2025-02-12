@@ -34,6 +34,38 @@ https://kojidev.rockylinux.org/kojifiles/packages/kernel/4.18.0/425.3.1.el8/x86_
 crash vmcore /usr/lib/debug/lib/modules/<对应内核调试文件>/vmlinux
 ```
 
+就以触发宕机的 CPU 上当时运行的进程为例
+
+```bash
+task -R stack
+```
+
+使用 mach 指令获取内核栈的大小
+
+```bash
+mach | grep SIZE
+```
+
+上面`KERNEL STACK SIZE`表示的就是内核栈的大小，这里是 16KB
+
+Rd 命令默认是按 8 字节为单位，所以 16KB 的话，需要读取 2KB，也就是 `0x800`，此外，加入 -s 选项，这样可以将内核栈里的函数符号翻译成符号名加偏移的格式。
+
+```bash
+rd -s 0xffff973108079080 0x800
+```
+
+或者使用
+
+```bash
+bt -r
+```
+
+bt 还提供了`-T/t`参数，这样会把内核栈里可以解析的部分打印出来
+
+```bash
+bt -T
+```
+
 ## 常用命令
 
 查看系统中所有进程的信息
@@ -48,7 +80,7 @@ ps
 vm
 ```
 
-查看所有CPU的状态
+查看所有 CPU 的状态
 
 ```bash
 cpu
