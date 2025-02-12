@@ -42,6 +42,26 @@ BIOS 建议额外设置断电后 USB 仍然供电，通常是华硕主板：
 
 使用 SPI 电缆将 IPMI 扩展卡连接到主板上的 TPM 接头（或 SPI 接头）。此连接对于启用 BIOS 强制更新功能至关重要。
 
+## kcs 接口
+
+### BMC 固件及接线
+
+必须接入 BMC Header
+
+![image-20250212165322746](./.assets/IPMI远程管理卡/image-20250212165322746.png)
+
+刷入 BMC Fireware，详见官方帮助文档：<https://www.asus.com.cn/support/faq/1047906/>
+
+请至BIOS Advanced Mode-Server Mgmt页面，如下图举例，BMC Firmware 版本为1.20
+
+![image-20250212165120872](./.assets/IPMI远程管理卡/image-20250212165120872.png)
+
+如需要使用 ipmptool 并透过 kcs 接口重新设置 IPMI Expansion Card 的密码，请到以下 BIOS 选项设置系统对应的 OS 
+
+IPMI \In-Band Driver type ----[Windows] or [Linux]
+
+![image-20250212165056350](./.assets/IPMI远程管理卡/image-20250212165056350.png)
+
 ### 操作系统设置
 
 安装 OpenIPMI
@@ -49,14 +69,16 @@ BIOS 建议额外设置断电后 USB 仍然供电，通常是华硕主板：
 ```bash
 dnf install OpenIPMI
 
+# 加载内核模块
 systemctl enalbe --now ipmi
 ```
 
-加载内核模块
+手动加载内核模块可以使用如下命令：
 
 ```bash
-cat /proc/devices | grep ipmi
-mknod /dev/ipmi0 c 238 0x0
+# 手动构建字符设备，不推荐
+# cat /proc/devices | grep ipmi
+# mknod /dev/ipmi0 c 238 0x0
 
 modprobe ipmi_devintf
 modprobe ipmi_msghandler
@@ -65,16 +87,49 @@ modprobe ipmi_si
 modprobe ipmi_ssif
 modprobe ipmi_watchdog
 
-rmmod ipmi_si && modprobe -v ipmi_si type="kcs" ports="0xca2" regspacings="4"
+# 如果 ipmi 设备识别不到可以尝试切换 kcs 接口
+# rmmod ipmi_si && modprobe -v ipmi_si type="kcs" ports="0xca2" regspacings="4"
 ```
 
-重置密码
+重置密码，Windows 需要以管理员权限执行
 
 ```bash
 ipmitool -I ms raw 0x32 0x66
 ```
 
-### 官方资料
+### 使用 IPMITool
+
+修改 IP
+
+```bash
+# 打印当前 ipmi 地址配置信息
+ipmitool lan print 1
+
+# 设置 id 1 为静态 IP 地址
+ipmitool lan set 1 ipsrc static
+
+# 设置 IPMI 地址
+ipmitool lan set 1 ipaddr 192.168.17.253
+
+# 设置 IPMI 子网掩码
+ipmitool lan set 1 netmask 255.255.255.0
+
+# 设置 IPMI 网关
+ipmitool lan set 1 defgw ipaddr 192.168.17.254
+```
+
+修改账号
+
+```bash
+# 显示 IPMI 用户列表
+ipmitool user list
+
+# 可以直接修改超级用户的密码，不用重新创建
+# 修改用户 id 1 的密码 为 abc-123
+ipmitool user set password 1 abc-123
+```
+
+## 官方资料
 
 华硕支持：<https://www.asus.com.cn/supportonly/ipmi%20expansion%20card/helpdesk_knowledge/>
 
