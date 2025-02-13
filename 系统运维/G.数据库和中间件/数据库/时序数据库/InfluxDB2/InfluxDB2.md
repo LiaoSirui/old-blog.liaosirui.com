@@ -1,6 +1,6 @@
 Docker compose 部署
 
-```
+```yaml
 networks:
 
   influxdb:
@@ -42,7 +42,7 @@ services:
     environment:
       TZ: Asia/Shanghai
       GF_SECURITY_ADMIN_USER: grafana
-      GF_SECURITY_ADMIN_PASSWORD: grafana-csdev-241106
+      GF_SECURITY_ADMIN_PASSWORD: grafana-241106
     volumes:
       - ./grafana:/var/lib/grafana
     networks:
