@@ -170,3 +170,6 @@ curl -X 'PUT' \
 }'
 ```
 
+# org.apache.http.conn.HttpHostConnectException: Connect to sonatype-download.global.ssl.fastly.net:443
+
+![img](./.assets/Nexus部署和运维/c80b2f05801777807994040282313177.png)
