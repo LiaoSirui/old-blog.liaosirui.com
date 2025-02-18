@@ -52,3 +52,22 @@ with this release:
 * Ubuntu 23.04 (kernel 6.2)
 ```
 
+## 配置网卡
+
+开启混杂模式
+
+```bash
+exanic-config exanic0:0 promisc on
+```
+
+## 固件管理
+
+固件查询：<https://software.cisco.com/download/home/286326311>
+
+例如 x25 网卡：<https://software.cisco.com/download/home/286326476/type/286326893/release/x25_20210121?catid=268437717>
+
+Nexus K3P-S FPGA SmartNIC
+
+## 参考资料
+
+- <https://www.zhihu.com/column/c_1688495482572267520>
