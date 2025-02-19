@@ -72,6 +72,23 @@ user.password='abcd1234!'
 user.save!
 ```
 
+### 配置
+
+关闭注册
+
+```bash
+::Gitlab::CurrentSettings.update!(signup_enabled: false)
+```
+
+设置管理员
+
+```bash
+user = User.find_by(username: 'sirui.liao')
+
+user.admin = true
+user.save!
+```
+
 ## 仓库和 hash 对应
 
 Gitlab 的仓库存放在 `@hashed` 目录中
@@ -81,6 +98,11 @@ Gitlab 的仓库存放在 `@hashed` 目录中
 ```bash
 echo -n $ID | sha256sum
 ```
+
+## 邮箱配置
+
+- <https://gitlab.cn/docs/omnibus/settings/smtp.html>
+- <https://docs.gitlab.com/omnibus/settings/smtp/>
 
 ## 参考资料
 

@@ -68,6 +68,31 @@ exanic-config exanic0:0 promisc on
 
 Nexus K3P-S FPGA SmartNIC
 
+更新固件
+
+```bash
+gzip -d exanic_x25_20210121.fw.gz
+exanic-fwupdate -d exanic0 exanic_x25_20210121.fw
+
+# Hot Reload
+exanic-fwupdate -r
+```
+
+出现
+
+```
+kernel:unregister_netdevice: waiting for enp1s0 to become free. Usage count = 4
+```
+
+先卸载驱动
+
+```
+rmmod exasock
+rmmod exanic
+```
+
+
+
 ## 参考资料
 
 - <https://www.zhihu.com/column/c_1688495482572267520>
