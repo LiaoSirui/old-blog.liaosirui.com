@@ -376,7 +376,7 @@ export PATH="/usr/local/opt/go@1.22/bin:$PATH"
 go install tailscale.com/cmd/tailscale{,d}@v1.72.1
 
 sudo $HOME/go/bin/tailscaled install-system-daemon
-# 卸载守护进程：$HOME/go/bin/tailscaled uninstall-system-daemon
+# 卸载守护进程：sudo $HOME/go/bin/tailscaled uninstall-system-daemon
 ```
 
 连接
