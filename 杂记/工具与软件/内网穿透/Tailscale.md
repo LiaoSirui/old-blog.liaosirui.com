@@ -126,25 +126,53 @@ Tailscale 使用的算法很有趣，所有客户端之间的连接都是先选�
 
 ### 完整的部署文件
 
-### 部署 Headscale
-
 ```yaml
 services:
+  postgresql:
+    image: docker.io/library/postgres:16.6-bookworm
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    shm_size: "256m"
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${HEADSCALE_PG_PASS:?database password required}
+      POSTGRES_USER: ${HEADSCALE_PG_USER:-headscale}
+      POSTGRES_DB: ${HEADSCALE_PG_DB:-headscale}
+    networks:
+      - tailscale
   headscale:
     image: docker.io/headscale/headscale:${HEADSCALE_VERSION}
     restart: always
+    depends_on:
+      postgresql:
+        condition: service_healthy
     volumes:
       - "./headscale/config:/etc/headscale"
+      - "./headscale/acls:/etc/headscale-acls"
       - "./headscale/data:/var/lib/headscale"
     environment:
       TZ: Asia/Shanghai
     command:
       - serve
-    network_mode: "host"
-    # networks:
-    #   - tailscale
-    # ports:
-    #   - 8080:8080
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+      - NET_RAW
+      - CAP_NET_BIND_SERVICE
+    sysctls:
+      - net.ipv4.ip_forward=1
+    networks:
+      - tailscale
+    ports:
+      - 8080:8080
+      - 9090:9090 # metrics
+      - 50443:50443 # grpc
   headplane:
     image: ghcr.io/tale/headplane:${HEADPLANE_VERSION}
     restart: always
@@ -162,12 +190,18 @@ services:
       PORT: '3000'
       COOKIE_SECURE: 'false'
       ROOT_API_KEY: ${ROOT_API_KEY}
+      OIDC_ISSUER: ${OIDC_ISSUER}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      OIDC_CLIENT_SECRET_METHOD: client_secret_basic
+      OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI}
+      DISABLE_API_KEY_LOGIN: true
     networks:
       - tailscale
     ports:
       - 3000:3000
   derper:
-    image: ghcr.io/fredliang44/derper:v${DERP_VERSION}
+    image: ghcr.io/fredliang44/derper:${DERP_VERSION}
     volumes:
       - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
       - ./derper/certs:/app/certs
@@ -185,14 +219,50 @@ services:
       - 3478:3478/udp
       - 19850:80
       - 19851:19851
+  dex-idp:
+    image: ghcr.io/dexidp/dex:v2.42.0
+    restart: always
+    volumes:
+      - './dex-idp:/etc/dex-idp'
+    expose:
+      - '5556'
+    ports:
+      - '5556:5556'
+    networks:
+      - tailscale
+    entrypoint: /bin/sh
+    command: |
+      -c 'dex serve --web-http-addr 0.0.0.0:5556 --telemetry-addr 0.0.0.0:5558 /etc/dex-idp/config.yaml'
 networks:
   tailscale:
     ipam:
       driver: default
       config:
         - subnet: "172.29.1.0/24"
+          ip_range: 172.29.1.0/24
+          gateway: 172.29.1.254
 
 ```
+
+`.env` 配置参考，为空的值需要自己填写 key
+
+```bash
+HEADSCALE_VERSION=0.25.0
+HEADPLANE_VERSION=0.4.1
+DERP_VERSION=v1.80.0
+
+HEADSCALE_PG_PASS=iotysh6px1icxa
+
+COOKIE_SECRET=""
+HEADSCALE_PUBLIC_URL=headscale.liaosirui.com
+ROOT_API_KEY=
+OIDC_ISSUER=https://oidc.liaosirui.com
+OIDC_CLIENT_ID=alpha-quant-app
+OIDC_CLIENT_SECRET=
+OIDC_REDIRECT_URI=https://headscale.liaosirui.com/admin/oidc/callback
+```
+
+### 部署 Headscale
 
 下载镜像
 
@@ -208,7 +278,12 @@ docker-pull "docker.io/headscale/headscale:0.25.0"
 ```bash
 mkdir -p ./headscale/config
 wget https://github.com/juanfont/headscale/raw/v0.25.0/config-example.yaml \
-  -O ./headscale/config/config.yaml
+  -O ./headscale/config/config-example.yaml
+wget https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64 \
+  -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+  
+set +C
+grep -v '#' config-example.yaml |grep -v '^$'> config.yaml
 ```
 
 修改配置：
@@ -217,48 +292,220 @@ wget https://github.com/juanfont/headscale/raw/v0.25.0/config-example.yaml \
 
 - 修改 `listen_addr` 为 `0.0.0.0:8080`
 
-- 如果暂时用不到 DNS 功能，可以先将 `magic_dns` 设为 false
+```bash
+# 基础配置
+yq -i '.server_url = "https://headscale.liaosirui.com"' ./config.yaml
+yq -i '.listen_addr = "0.0.0.0:8080"' ./config.yaml
+yq -i '.metrics_listen_addr = "0.0.0.0:9090"' ./config.yaml
+yq -i '.grpc_listen_addr = "0.0.0.0:50443"' ./config.yaml
+```
+
+- 可自定义私有网段，也可同时开启 IPv4 和 IPv6
+
+```bash
+# network
+yq -i '.prefixes.v4 = "100.64.0.0/16"' ./config.yaml
+yq -i '.prefixes.v6 = "fd7a:115c:a1e0::/48"' ./config.yaml
+yq -i '.prefixes.allocation = "random"' ./config.yaml
+```
+
+- 开启 derp
+
+```bash
+# derp
+yq -i '.derp.server.enabled = false' ./config.yaml
+yq -i '.derp.urls = ["https://controlplane.tailscale.com/derpmap/default"]' ./config.yaml
+yq -i '.derp.paths = ["/etc/headscale/derp.yaml"]' ./config.yaml
+```
+
+- 配置数据库
+
+```bash
+# database
+yq -i '.database.type = "postgres"' ./config.yaml
+yq -i '.database.postgres.host = "postgresql"' ./config.yaml
+yq -i '.database.postgres.port = 5432' ./config.yaml
+yq -i '.database.postgres.name = "headscale"' ./config.yaml
+yq -i '.database.postgres.user = "headscale"' ./config.yaml
+yq -i '.database.postgres.pass = "dbpassword"' ./config.yaml
+yq -i '.database.postgres.max_open_conns = 10' ./config.yaml
+yq -i '.database.postgres.max_idle_conns = 10' ./config.yaml
+yq -i '.database.postgres.conn_max_idle_time_secs = 3600' ./config.yaml
+yq -i '.database.postgres.ssl = false' ./config.yaml
+```
+
+- 修改日志等级
+
+```bash
+# log
+yq -i '.log.level = "error"' ./config.yaml
+```
+
+- 配置 acl
+
+```bash
+# acl
+yq -i '.policy.mode = "file"' ./config.yaml
+yq -i '.policy.path = "/etc/headscale-acls/policy.hujson"' ./config.yaml
+```
+
+- `magic_dns` 配置
+
+```bash
+# DNS
+yq -i '.dns.magic_dns = true' ./config.yaml
+yq -i '.dns.base_domain = "tailscale-node.liaosirui.com"' ./config.yaml
+yq -i '.dns.nameservers.global = ["223.5.5.5","223.6.6.6"]' ./config.yaml
+```
 
 - 建议打开随机端口，将 randomize_client_port 设为 true
 
-- 可自定义私有网段，也可同时开启 IPv4 和 IPv6：
-
-  ```yaml
-  prefixes:
-    # v6: fd7a:115c:a1e0::/48
-    v4: 100.64.0.0/16
-  ```
+```bash
+# randomize_client_port
+yq -i '.randomize_client_port = true' ./config.yaml
+```
 
 直接执行如下命令
-
-```bash
-wget https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64 \
-  -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
-
-# 基础配置
-yq -i '.server_url = "http://<真实IP>:8080"' ./headscale/config/config.yaml
-yq -i '.listen_addr = "0.0.0.0:8080"' ./headscale/config/config.yaml
-yq -i '.prefixes.v4 = "100.64.0.0/16"' ./headscale/config/config.yaml
-yq -i '.prefixes.v6 = "fd7a:115c:a1e0::/48"' ./headscale/config/config.yaml
-yq -i '.randomize_client_port = true' ./headscale/config/config.yaml
-
-# 如果使用 DNS
-yq -i '.dns.magic_dns = true' ./headscale/config/config.yaml
-yq -i '.dns.nameservers = ["114.114.114.114"]' ./headscale/config/config.yaml
-yq -i '.dns.base_domain = "<域名>"' ./headscale/config/config.yaml
-```
 
 创建数据
 
 ```bash
 mkdir -p ./headscale/data
-touch ./headscale/data/db.sqlite
+```
+
+创建初始化的 acl
+
+```bash
+mkdir -p ./headscale/acls
+touch ./headscale/acls/policy.hujson
+```
+
+ACL 如下
+
+```json
+{
+    // groups are collections of users having a common scope. A user can be in multiple groups
+    // groups cannot be composed of groups
+    "groups": {
+        "group:admin": [
+            "sirui.liao"
+        ],
+    },
+    // tagOwners in tailscale is an association between a TAG and the people allowed to set this TAG on a server.
+    // This is documented [here](https://tailscale.com/kb/1068/acl-tags#defining-a-tag)
+    // and explained [here](https://tailscale.com/blog/rbac-like-it-was-meant-to-be/)
+    "tagOwners": {
+    },
+    // hosts should be defined using its IP addresses and a subnet mask.
+    // to define a single host, use a /32 mask. You cannot use DNS entries here,
+    // as they're prone to be hijacked by replacing their IP addresses.
+    // see https://github.com/tailscale/tailscale/issues/3800 for more information.
+    "hosts": {
+    },
+    "acls": [
+        // admin have access to all servers
+        {
+            "action": "accept",
+            "src": [
+                "group:admin"
+            ],
+            "dst": [
+            ]
+        },
+        // We still have to allow internal users communications since nothing guarantees that each user have
+        // their own users.
+        {
+            "action": "accept",
+            "src": [
+                "sirui.liao"
+            ],
+            "dst": [
+                "sirui.liao:*"
+            ]
+        }
+    ]
+}
+
+```
+
+配置 OIDC 登录
+
+为了方便，使用无需数据库的 dex-idp 进行
+
+```yaml
+enablePasswordDB: true
+issuer: https://oidc.liaosirui.com
+frontend:
+  issuer: HeadScale 登录
+  theme: light
+  dir: /srv/dex/web
+oauth2:
+  skipApprovalScreen: true
+  alwaysShowLoginScreen: false
+web:
+  http: 0.0.0.0:5556
+telemetry:
+  http: 0.0.0.0:5558
+storage:
+  type: memory
+  # type: sqlite3
+  # config:
+  #   file: /dex.db
+staticClients:
+  - id: alpha-quant-app
+    redirectURIs:
+      - "https://headscale.liaosirui.com/oidc/callback"
+      - "https://headscale.liaosirui.com/admin/oidc/callback"
+    name: "Alpha Quant"
+    secret: ""
+staticPasswords:
+  - email: "headscale-admin@liaosirui.com"
+    # bcrypt hash of the string "password": $(echo userpass | htpasswd -BinC 10 headscale-admin | cut -d: -f2)
+    # 自定义密码生成 hash 填到下方
+    hash: ""
+    username: "headscale-admin"
+    userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+connectors: []
+
+```
+
+填入 `config.yaml` 中关于 IDC 的配置
+
+```bash
+# oidc
+cat >> ./config.yaml << EOF
+oidc:
+  only_start_if_oidc_is_available: true
+  issuer: "https://oidc.liaosirui.com"
+  client_id: "alpha-quant-app"
+  client_secret: ""
+  scope: ["openid", "profile", "email"]
+  extra_params:
+    domain_hint: liaosirui.com
+  allowed_domains:
+    - liaosirui.com
+  # allowed_groups:
+  #   - /headscale
+  allowed_users:
+    - headscale-admin@liaosirui.com
+  pkce:
+    enabled: false
+    method: S256
+  strip_email_domain: true
+EOF
 ```
 
 启动
 
 ```bash
-docker compose up -d
+docker compose up postgresql dex-idp -d
+```
+
+先测试 IDP 是否可以访问，然后再启动 headscale
+
+```bash
+docker compose up headscale -d
+docker compose up derper -d
 ```
 
 ### 配置 Headscale
@@ -268,7 +515,7 @@ Tailscale 中有一个概念叫 tailnet，可以理解成租户，租户与租�
 ```bash
 alias headscale='docker compose exec -it headscale headscale'
 
-headscale user create '<用户名>'
+headscale user create '<用户名>' -d '<用户名>' -e '<用户邮箱>'
 ```
 
 查看命名空间：
@@ -292,6 +539,12 @@ headscale apikey create
 将 Headscale 公网域名和 API Key 填入 Headscale-Admin 的设置页面，同时取消勾选 Legacy API，然后点击「Save」
 
 接入成功后，点击左边侧栏的「Users」，然后点击「Create」开始创建用户
+
+启动服务
+
+```bash
+docker compose up headplane -d
+```
 
 ### 打通局域网
 
