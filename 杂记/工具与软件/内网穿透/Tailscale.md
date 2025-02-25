@@ -114,7 +114,17 @@ Tailscale 使用的算法很有趣，所有客户端之间的连接都是先选�
 
 因此，DERP 既是 Tailscale 在 NAT 穿透失败时的保底通信方式（此时的角色与 TURN 类似），也是在其他一些场景下帮助我们完成 NAT 穿透的旁路信道。换句话说，它既是我们的保底方式，也是有更好的穿透链路时，帮助我们进行连接升级（Upgrade to a peer-to-peer connection）的基础设施。
 
+### NAT 穿透与网状拓扑
+
+设备其实就组成了一个非标准的网状拓扑:
+
+![img](./.assets/Tailscale/MrF6yn.png)
+
+在这种拓扑下, 两个设备之间的通讯速度已经不在取决于中央服务器, 而是直接取决于两端设备的带宽, 也就是说达到了设备网络带宽峰值. 当然 NAT 穿透也不是百分百能够成功的, 在复杂网络情况下有些防火墙不会按照预期工作或者说有更严格的限制; 比如 IP、端口、协议限制等等, 所以为了保证可靠性可以让中央服务器中转做后备方案, 即尽量尝试 NAT 穿透, 如果不行走中央服务器中继
+
 ## Headscale
+
+### 完整的部署文件
 
 ### 部署 Headscale
 
@@ -190,14 +200,14 @@ networks:
 docker-pull() {
   skopeo copy docker://${1} docker-daemon:${1}
 }
-docker-pull "docker.io/headscale/headscale:0.24.0"
+docker-pull "docker.io/headscale/headscale:0.25.0"
 ```
 
 创建 Headscale 配置文件：
 
 ```bash
 mkdir -p ./headscale/config
-wget https://github.com/juanfont/headscale/raw/v0.24.0/config-example.yaml \
+wget https://github.com/juanfont/headscale/raw/v0.25.0/config-example.yaml \
   -O ./headscale/config/config.yaml
 ```
 
@@ -269,7 +279,7 @@ headscale user list
 
 ### 可视化界面
 
-<https://github.com/tale/headplane>
+- <https://github.com/tale/headplane>
 
 需要通过 API Key 来接入 Headscale，所以在使用之前需要先创建一个 API key
 
@@ -283,132 +293,7 @@ headscale apikey create
 
 接入成功后，点击左边侧栏的「Users」，然后点击「Create」开始创建用户
 
-## Tailscale 客户端接入
-
-可以查看：
-
-- `http://<HEADSCALE_PUB_IP>:8080/windows`
-- `http://<HEADSCALE_PUB_IP>:8080/apple`
-
-### Linux
-
-Tailscale 官方提供了各种 Linux 发行版的软件包
-
-```bash
-# 官方提供了静态编译的二进制文件
-curl -fsSL https://tailscale.com/install.sh | sh
-
-# 例如
-# https://tailscale.com/download/linux/rhel-9
-
-# 启动 tailscaled.service 并设置开机自启
-systemctl enable --now tailscaled
-```
-
-Tailscale 接入 Headscale：
-
-```bash
-# 如果在自己的服务器上部署的，请将 <HEADSCALE_PUB_ENDPOINT> 换成 Headscale 公网 IP 或域名
-tailscale up \
-  --login-server=http://<HEADSCALE_PUB_ENDPOINT>:8080 \
-  --accept-routes=true \
-  --accept-dns=false
-
-# snat-subnet-routes 通过本节点访问局域网设备时，不做源地址转换，默认为 true，仅支持 Linux
-# --snat-subnet-routes=false
-```
-
-将其中的命令复制粘贴到 headscale 所在机器的终端中，并将 USERNAME 替换为前面所创建的 user
-
-```bash
-headscale nodes register \
---user '<用户名>' \
---key mkey:016f63275a41d8a8d87319ca1c9e8e1adfd6aab66b34710978c60e3d64377b31
-```
-
-注册成功，查看注册的节点：
-
-```bash
-headscale nodes list
-```
-
-回到 Tailscale 客户端所在的 Linux 主机，可以看到 Tailscale 会自动创建相关的路由表和 iptables 规则。路由表可通过以下命令查看：
-
-```bash
-ip route show table 52
-```
-
-### Pre-Authkeys 接入
-
-首先在服务端生成 pre-authkey 的 token，有效期可以设置为 1 小时：
-
-```bash
-headscale preauthkeys create \
--e 1h \
---user '<用户名>'
-```
-
-查看已经生成的 key：
-
-```bash
-headscale --user '<用户名>' preauthkeys list
-```
-
-现在新节点就可以无需服务端同意直接接入
-
-````bash
-tailscale up \
-  --login-server=http://<HEADSCALE_PUB_ENDPOINT>:8080 \
-  --accept-routes=true \
-  --accept-dns=false \
-  --authkey $KEY
-````
-
-### MacOS
-
-安装
-
-```bash
-brew install go@1.22
-
-export GOPROXY=https://goproxy.cn,direct
-export PATH="/usr/local/opt/go@1.22/bin:$PATH"
-go install tailscale.com/cmd/tailscale{,d}@v1.72.1
-
-sudo $HOME/go/bin/tailscaled install-system-daemon
-# 卸载守护进程：sudo $HOME/go/bin/tailscaled uninstall-system-daemon
-```
-
-连接
-
-```bash
-tailscale up \
-  --login-server=http://<HEADSCALE_PUB_ENDPOINT>:8080 \
-  --accept-routes=true \
-  --accept-dns=false \
-  --authkey $KEY
-```
-
-测试
-
-```bash
-export PATH="/usr/local/opt/go@1.22/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
-
-tailscale ping 100.64.0.1
-```
-
-<https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS>
-
-在浏览器中打开 URL：`https://<HEADSCALE_PUB_ENDPOINT>/apple`
-
-### 其他 Linux 发行版
-
-- OpenWrt：https://github.com/adyanth/openwrt-tailscale-enabler
-- 群晖：https://github.com/tailscale/tailscale-synology
-- 威联通：https://github.com/tailscale/tailscale-qpkg
-
-## 打通局域网
+### 打通局域网
 
 只是打造了一个点对点的 Mesh 网络，各个节点之间都可以通过 WireGuard 的私有网络 IP 进行直连
 
@@ -476,29 +361,13 @@ iptables -t mangle -A FORWARD -o tailscale0 -p tcp -m tcp \
 tracepath 10.244.244.11
 ```
 
-## 路由查看
+### Tailscale 更多设置
 
-回到 Tailscale 客户端所在的 Linux 主机，可以看到 Tailscale 会自动创建相关的路由表和 iptables 规则。路由表可通过以下命令查看：
-
-```
-[root@dev-router ~]# ip route show table 52
-100.64.0.1 dev tailscale0
-100.100.100.100 dev tailscale0
-```
-
-查看 iptables 规则
-
-```bash
-iptabls -S
-```
-
-## Tailscale 更多设置
-
-### 子网
+#### 子网
 
 子网功能一般在路由器上部署，当然，如果有一台内网设备，也可以利用其内网转发能力设置子网宣告，这一点要比 OpenWrt 稍微方便一些
 
-### MagicDNS
+#### MagicDNS
 
 设备加入 Tailscale 网络之后，Tailscale 软件会在本地设置一个 VPN 虚拟网络接口，带宽显示 100Gbps，即无上限。通过该接口发送出去的流量，会被 Tailscale 软件截获，二次处理、打包后通过默认路由发送出去。
 
@@ -519,7 +388,7 @@ MagicDNS 运作原理，基于 100.100.100.100 本地 Tailscale DNS 服务器。
 
 推荐使用 MagicDNS 而非 IP 地址。此外，MagicDNS 搭配 HTTPS，能实现更方便、更合规的 VPN 网络
 
-### Tailscale HTTPS
+#### Tailscale HTTPS
 
 Tailscale 提供了 acme 功能，可以自动申请 Let’s Encrypt 证书
 
@@ -564,7 +433,7 @@ Exit 一般指的是出口，比如楼道里、消防门上方都会表示 Exit�
 tailscale up --accept-routes --ssh --advertise-exit-node
 ```
 
-## DEPR  部署
+### DEPR  部署
 
 官方内置了很多 DERP 服务器
 
@@ -761,7 +630,119 @@ tailscale netcheck 实际上只检测 3478/udp 的端口， 就算 netcheck 显�
 
 设置一下 DERP 的访问权限，derper 启动时加上参数 --verify-clients
 
-## 客户端检查
+## Tailscale 客户端接入
+
+可以查看：
+
+- `http://<HEADSCALE_PUB_IP>:8080/windows`
+- `http://<HEADSCALE_PUB_IP>:8080/apple`
+- <https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS>
+
+### Linux 安装 tailscale
+
+Tailscale 官方提供了各种 Linux 发行版的软件包
+
+```bash
+# 官方提供了静态编译的二进制文件
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# 例如
+# https://tailscale.com/download/linux/rhel-9
+
+# 启动 tailscaled.service 并设置开机自启
+systemctl enable --now tailscaled
+```
+
+### MacOS 安装 tailscale
+
+安装
+
+```bash
+brew install go@1.22
+
+export GOPROXY=https://goproxy.cn,direct
+export PATH="/usr/local/opt/go@1.22/bin:$PATH"
+go install tailscale.com/cmd/tailscale{,d}@v1.80.0
+
+sudo $HOME/go/bin/tailscaled install-system-daemon
+# 卸载守护进程：sudo $HOME/go/bin/tailscaled uninstall-system-daemon
+```
+
+需要自己加入 PATH
+
+```bash
+export PATH="$HOME/go/bin:$PATH"
+```
+
+### 其他 Linux 发行版
+
+- OpenWrt：https://github.com/adyanth/openwrt-tailscale-enabler
+- 群晖：https://github.com/tailscale/tailscale-synology
+- 威联通：https://github.com/tailscale/tailscale-qpkg
+
+### Pre-Authkeys 接入
+
+首先在服务端生成 pre-authkey 的 token，有效期可以设置为 1 小时：
+
+```bash
+headscale preauthkeys create -e 2h --user '<用户名>'
+```
+
+查看已经生成的 key：
+
+```bash
+headscale --user '<用户名>' preauthkeys list
+```
+
+现在新节点就可以无需服务端同意直接接入
+
+````bash
+# 如果在自己的服务器上部署的，请将 <HEADSCALE_PUB_ENDPOINT> 换成 Headscale 公网 IP 或域名
+tailscale up \
+  --login-server=http://<HEADSCALE_PUB_ENDPOINT>:8080 \
+  --accept-routes=true \
+  --accept-dns=false \
+  --authkey $KEY
+
+# snat-subnet-routes 通过本节点访问局域网设备时，不做源地址转换，默认为 true，仅支持 Linux
+#    --snat-subnet-routes=false
+````
+
+## 客户端网络调试
+
+在调试中继节点或者不确定网络情况时, 可以使用一些 Tailscale 内置的命令来调试网络
+
+### Linux 路由查看
+
+回到 Tailscale 客户端所在的 Linux 主机，可以看到 Tailscale 会自动创建相关的路由表和 iptables 规则。路由表可通过以下命令查看：
+
+```
+[root@dev-router ~]# ip route show table 52
+100.64.0.1 dev tailscale0
+100.100.100.100 dev tailscale0
+```
+
+查看 iptables 规则
+
+```bash
+iptabls -S
+```
+
+### Ping 命令
+
+`tailscale ping` 命令可以用于测试 IP 连通性, 同时可以看到时如何连接目标节点的。
+
+默认情况下 Ping 命令首先会使用 Derper 中继节点通信, 然后尝试 P2P 连接; 一旦 P2P 连接成功则自动停止 Ping:
+
+```bash
+tailscale ping 100.64.0.2
+```
+
+由于其先走 Derper 的特性也可以用来测试 Derper 连通性
+
+### Status 命令
+
+通过 `tailscale status` 命令可以查看当前节点与其他对等节点的连接方式, 通过此命令可以查看到当前节点可连接的节点以及是否走了 Derper 中继:
 
 查看与通信对端的连接方式及状态
 
@@ -774,36 +755,20 @@ tailscale netcheck 实际上只检测 3478/udp 的端口， 就算 netcheck 显�
 100.64.0.3      node201              default      linux   idle, tx 11240 rx 11064
 ```
 
-ping 一下
+### NetCheck 命令
+
+有些情况下我们可以确认是当前主机的网络问题导致没法走 P2P 连接, 但是我们又想了解一下当前的网络环境; 此时可以使用 `tailscale netcheck` 命令来检测当前的网络环境, 此命令将会打印出详细的网络环境报告:
 
 ```bash
-tailscale ping 100.64.0.2
+tailscale netcheck
 ```
 
-## 容器部署
 
-Linux tailscale
-
-```yaml
-services:
-    tailscaled:
-        container_name: tailscaled
-        image: tailscale/tailscale
-        network_mode: host
-        privileged: true
-        restart: always
-        cap_add: 
-            - net_admin
-            - sys_module
-        volumes:
-            - ./lib:/var/lib
-            - /dev/net/tun:/dev/net/tun
-        command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
-
-```
 
 ## 参考资料
 
 - <https://junyao.tech/posts/18297f50.html>
 
 - <https://kiprey.github.io/2023/11/tailscale-derp/>
+
+- <https://mritd.com/2022/10/19/use-headscale-to-build-a-p2p-network/>
