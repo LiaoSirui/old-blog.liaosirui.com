@@ -1016,8 +1016,6 @@ tailscale ping 100.64.0.2
 tailscale netcheck
 ```
 
-
-
 ## 参考资料
 
 - <https://junyao.tech/posts/18297f50.html>
@@ -1025,3 +1023,5 @@ tailscale netcheck
 - <https://kiprey.github.io/2023/11/tailscale-derp/>
 
 - <https://mritd.com/2022/10/19/use-headscale-to-build-a-p2p-network/>
+
+- <https://linux.do/t/topic/171651>

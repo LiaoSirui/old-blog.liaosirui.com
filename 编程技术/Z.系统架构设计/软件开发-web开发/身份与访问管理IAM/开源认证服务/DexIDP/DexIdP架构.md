@@ -154,7 +154,7 @@ staticClients:
     redirectURIs:
       - "http://127.0.0.1:5555/callback"
     name: "Example App"
-    secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+    secret: ZXhhbXBsZS1hcHAtc2Vjcm
 
 ```
 
@@ -247,7 +247,7 @@ staticClients:
     redirectURIs:
       - "http://127.0.0.1:5555/callback"
     name: "Example App"
-    secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+    secret: ZXhhbXBsZS1hcHAtc2Vjcm
 
 ```
 

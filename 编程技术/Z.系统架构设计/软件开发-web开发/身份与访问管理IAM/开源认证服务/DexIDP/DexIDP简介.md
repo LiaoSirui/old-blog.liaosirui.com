@@ -77,13 +77,13 @@ staticClients:
   redirectURIs:
   - 'http://localhost:8000'
   name: 'kubernetes'
-  secret: "ZXhhbXBsZS1hcHAtc2VjcmV0"
+  secret: "ZXhhbXBsZS1hcHAtc2Vjcm"
 ```
 
 这里均为自定义参数，其中
 
 - `client_id`为`kubernetes``
-- ``client_secret`为`ZXhhbXBsZS1hcHAtc2VjcmV0`
+- ``client_secret`为`ZXhhbXBsZS1hcHAtc2Vjcm`
 
 - `redirectURIs` 为后续需要向 Dex 发起认证的可信任应用 callback 列表
 
