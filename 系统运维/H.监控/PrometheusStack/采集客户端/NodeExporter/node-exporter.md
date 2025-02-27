@@ -173,12 +173,6 @@ curl -s localhost:9100/metrics | curl -u USERNAME:PASSWORD --data-binary @- $PUS
 
 ## 常用查询指标
 
-- CPU
-
-| 指标名称               | 类型    | 含义                           |
-| ---------------------- | ------- | ------------------------------ |
-| node_cpu_seconds_total | Counter | 节点 CPU 的使用时间 (单位：秒) |
-
 - 内存
 
 | 指标名称                   | 类型  | 含义                           |
@@ -228,3 +222,5 @@ curl -s localhost:9100/metrics | curl -u USERNAME:PASSWORD --data-binary @- $PUS
 - 硬件分析：<https://www.cnblogs.com/wuzhengc/p/16123077.html>
 
 内存计数不准的问题，由于 buffer cache 的存在：<https://cloud.tencent.com/developer/article/1637682>
+
+- <https://mafeifan.com/DevOps/Prometheus/10.%E4%B8%BB%E6%9C%BA%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87.html>

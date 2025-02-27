@@ -4,7 +4,7 @@ CPU 频率缩放使操作系统可以向上或向下缩放 CPU 频率，以节�
 
 CPU 频率缩放在 Linux 内核中实现，基础架构称为 cpufreq。从内核 3.4 开始，必需的模块会自动加载，并且默认情况下会启用推荐的按需调控器。但是，为您的桌面环境提供的用户空间工具（如 cpupower，acpid，笔记本电脑模式工具或 GUI 工具）仍可用于高级配置。
 
-CPU 动态节能技术用于降低服务器功耗，通过选择系统空闲状态不同的电源管理策 略，可以实现不同程度降低服务器功耗，更低的功耗策略意味着 CPU 唤醒更慢对性能 影响更大。对于对时延和性能要求高的应用，建议关闭 CPU 的动态调节功能，禁止 CPU 休眠，并把 CPU 频率固定到最高。通常建议在服务器 BIOS 中修改电源管理为 Performance，如果发现 CPU 模式为 conservative 或者 powersave，可以使用 cpupower 设置 CPU Performance 模式，效果也是相当显著的。
+CPU 动态节能技术用于降低服务器功耗，通过选择系统空闲状态不同的电源管理策略，可以实现不同程度降低服务器功耗，更低的功耗策略意味着 CPU 唤醒更慢对性能 影响更大。对于对时延和性能要求高的应用，建议关闭 CPU 的动态调节功能，禁止 CPU 休眠，并把 CPU 频率固定到最高。通常建议在服务器 BIOS 中修改电源管理为 Performance，如果发现 CPU 模式为 conservative 或者 powersave，可以使用 cpupower 设置 CPU Performance 模式，效果也是相当显著的。
 
 ## cpufreq 的五种模式
 
@@ -78,6 +78,38 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 performance
 ```
 
+开机自动调整
+
+```bash
+# 创建cpupower配置文件
+cat << EOF | sudo tee /etc/sysconfig/cpupower
+# See 'cpupower help' and cpupower(1) for more info
+CPUPOWER_START_OPTS="frequency-set -g performance"
+CPUPOWER_STOP_OPTS="frequency-set -g ondemand"
+EOF
+
+# 创建自启动服务
+cat << EOF | sudo tee /usr/lib/systemd/system/cpupower.service
+[Unit]
+Description=Configure CPU power related settings
+After=syslog.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/sysconfig/cpupower
+ExecStart=/usr/bin/cpupower $CPUPOWER_START_OPTS
+ExecStop=/usr/bin/cpupower $CPUPOWER_STOP_OPTS
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 刷新system服务
+systemctl daemon-reload
+systemctl enable cpupower.service
+```
+
 ## cpufreq_driver
 
 <https://wiki.archlinux.org/title/CPU_frequency_scaling>
@@ -102,7 +134,22 @@ performance
 cpupower frequency-info | grep driver
 ```
 
+## intel_pstate
 
+```bash
+ls /sys/devices/system/cpu/intel_pstate
+```
+
+- max_perf_pct 最大频率的百分比，例如4GHZ 4GHZ*90% = 3.6GHZ,可利用此控制最大频率
+- min_perf_pct 最小比列，p-state能够调到最小频率的比例，这个比例最节能
+- no_turbo 是否开启睿频， 0：开启 1： 关闭
+- num_pstates : 处理器支持的 p 状态数量。这个值在 0-255 之前。包含了睿频和非睿频 p-state。此属性是只读的，这是所支持的 p 状态与 cpu 电压和频率的一张表
+
+intel 关闭睿频
+
+```shell
+echo 1 >  /sys/devices/system/cpu/intel_pstate/no_turbo
+```
 
 ## `cpufreq`子系统
 
@@ -115,3 +162,5 @@ cpupower frequency-info | grep driver
 - <https://blog.51cto.com/u_11529070/9175151>
 - <https://docs.kernel.org/6.0/translations/zh_CN/cpu-freq/cpufreq-stats.html>
 - <https://www.cnblogs.com/LoyenWang/p/11385811.html>
+
+- <https://huataihuang.gitbooks.io/cloud-atlas/content/os/linux/kernel/cpu/acpi_cpufreq.html>

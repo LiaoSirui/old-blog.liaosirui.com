@@ -3,6 +3,7 @@
 关闭调节
 
 ```bash
+# 为什么关闭动态调节？？
 intel_pstate=disable intel_idle.max_cstate=0 processor.max_cstate=0
 
 amd_pstate=passive
