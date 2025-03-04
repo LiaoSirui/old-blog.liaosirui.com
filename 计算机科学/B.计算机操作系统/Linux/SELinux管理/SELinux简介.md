@@ -36,3 +36,5 @@ restorecon -r -v /usr/sbin/node_exporter
 - <https://wangchujiang.com/linux-command/c/semanage.html>
 
 - <http://c.biancheng.net/view/1147.html>
+
+- <https://eonun.com/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Linux/SELinux%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AD%96%E7%95%A5%E7%AE%A1%E7%90%86/>

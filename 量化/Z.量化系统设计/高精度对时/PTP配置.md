@@ -201,6 +201,13 @@ iptables -I INPUT -p udp -m udp --dport 319 -j ACCEPT
 iptables -I INPUT -p udp -m udp --dport 320 -j ACCEPT
 ```
 
+如果开启 SELinux，则需要 <https://man.linuxreviews.org/man8/ptp4l_selinux.8.html>
+
+```bash
+semanage permissive -a ptp4l_t
+# can be used to make the process type ptp4l_t permissive
+```
+
 启动 ptp4l 服务
 
 ```bash
@@ -449,8 +456,10 @@ pmc -u -b 0 'GET CURRENT_DATA_SET'
 
 此为超级主时钟身份。
 
-## 其他参考资料
+## 参考资料
 
 - <https://docs.redhat.com/zh-cn/documentation/red_hat_enterprise_linux/8/html/configuring_basic_system_settings/chrony-with-hw-timestamping_configuring-time-synchronization>
 
 - <https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/configuring_basic_system_settings/configuring-time-synchronization_configuring-basic-system-settings#chrony-with-hw-timestamping_configuring-time-synchronization>
+
+- <https://tsn.readthedocs.io/timesync.html>
