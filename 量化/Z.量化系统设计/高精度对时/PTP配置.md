@@ -7,20 +7,21 @@
 
 通常是：
 
-- ptp4l 进行时钟同步，实时网卡时钟与远端的时钟同步
+- ptp4l 进行时钟同步，实时网卡时钟与远端的时钟同步（比如 TSN 交换机，Time-Sensitive Networking）
 
-- phc2sys 将网卡上的时钟同步到操作系统
+- phc2sys 将网卡上的时钟同步到操作系统（以网卡上的时钟为 master）
 
-参考文档：
+参考文档：（注意这些资料都有点旧）
 
 - <https://docs.redhat.com/zh-cn/documentation/red_hat_enterprise_linux/7/html/system_administrators_guide/sec-synchronizing_the_clocks>
 - <https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/system_administrators_guide/ch-configuring_ptp_using_ptp4l#sec-Understanding_PTP>
+- <https://docs.oracle.com/en/operating-systems/oracle-linux/6/admin/section_kpy_1gh_pp.html>
 - <https://getiot.tech/linux-command/ptp4l>
 - <https://getiot.tech/linux-command/phc2sys/>
 - <https://getiot.tech/linux-command/phc_ctl>
 - <https://getiot.tech/linux-command/pmc>
 
-## 硬件与交换机准备
+## 配置前准备
 
 （1）确认硬件支持
 
@@ -36,7 +37,7 @@ switch(config-ptp-clock)# announce-interval 1  # 广播间隔（秒）
 
 （2）网络配置
 
-确保Linux系统与交换机处于同一子网，且 PTP 流量通过专用端口传输（如配置 VLAN 或 Trunk）。
+确保 Linux 系统与交换机处于同一子网，且 PTP 流量通过专用端口传输（如配置 VLAN 或 Trunk）。
 
 （3）安装 PTP 工具
 
@@ -52,23 +53,30 @@ PTP 要求使用的内核网络驱动程序支持软件时戳或硬件时戳。�
 ```bash
 ethtool -T eth0
 
-Time stamping parameters for eth0:
+Timestamping parameters for eth0:
 Capabilities:
-    hardware-transmit   (SOF_TIMESTAMPING_TX_HARDWARE)
-    software-transmit   (SOF_TIMESTAMPING_TX_SOFTWARE)
-    hardware-receive   (SOF_TIMESTAMPING_RX_HARDWARE)
-    software-receive   (SOF_TIMESTAMPING_RX_SOFTWARE)
-    software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
-    hardware-raw-clock  (SOF_TIMESTAMPING_RAW_HARDWARE)
-PTP Hardware Clock: 3
+        hardware-transmit     (SOF_TIMESTAMPING_TX_HARDWARE)
+        software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
+        hardware-receive      (SOF_TIMESTAMPING_RX_HARDWARE)
+        software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
+        software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
+        hardware-raw-clock    (SOF_TIMESTAMPING_RAW_HARDWARE)
+PTP Hardware Clock: 0
 Hardware Transmit Timestamp Modes:
-    off          (HWTSTAMP_TX_OFF)
-    on          (HWTSTAMP_TX_ON)
+        off                   (HWTSTAMP_TX_OFF)
+        on                    (HWTSTAMP_TX_ON)
 Hardware Receive Filter Modes:
-        none
-        ptpv1-l4-sync
-        ptpv1-l4-delay-req
-        ptpv2-event
+        none                  (HWTSTAMP_FILTER_NONE)
+        all                   (HWTSTAMP_FILTER_ALL)
+        ptpv1-l4-sync         (HWTSTAMP_FILTER_PTP_V1_L4_SYNC)
+        ptpv1-l4-delay-req    (HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ)
+        ptpv2-l4-sync         (HWTSTAMP_FILTER_PTP_V2_L4_SYNC)
+        ptpv2-l4-delay-req    (HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ)
+        ptpv2-l2-sync         (HWTSTAMP_FILTER_PTP_V2_L2_SYNC)
+        ptpv2-l2-delay-req    (HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ)
+        ptpv2-event           (HWTSTAMP_FILTER_PTP_V2_EVENT)
+        ptpv2-sync            (HWTSTAMP_FILTER_PTP_V2_SYNC)
+        ptpv2-delay-req       (HWTSTAMP_FILTER_PTP_V2_DELAY_REQ)
 ```
 
 软件时戳需要以下参数：
@@ -145,7 +153,7 @@ ptp4l -m -S -i eth0          # 主时钟
 ptp4l -m -S -s -i eth0       # 从时钟
 ```
 
-### 配置 PTP 参数
+### 配置 ptp4l
 
 修改 `/etc/sysconfig/ptp4l` 中关于网卡的配置
 
@@ -159,17 +167,13 @@ ptp4l -m -S -s -i eth0       # 从时钟
 
 ```bash
 # cat /etc/sysconfig/ptp4l 
-OPTIONS="-f /etc/ptp4l.conf -i eth0 -H -s -A -4 -m"
+OPTIONS="-f /etc/ptp4l.conf -i eth0 -m -H -s -A -4 --step_threshold=1.0 --summary_interval=10"
 # -2 视情况，部分不支持数据链路层
 ```
 
 修改 `/etc/ptp4l.conf` 配置
 
-`ptp4l` 通常会频繁写入消息。可以使用 `summary_interval` 指令降低该频率。其值的表达式为 2 的 N 次幂。例如，要将输出频率降低为每隔 1024（等于 2^10）秒，请将下面一行添加到 `/etc/ptp4l.conf` 文件。
-
-```
-summary_interval 10
-```
+`ptp4l` 通常会频繁写入消息。可以使用 `summary_interval` 指令降低该频率。其值的表达式为 2 的 N 次幂。例如，要将输出频率降低为每隔 1024（等于 2^10）秒，需要更改 `summary_interval` 为 10。
 
 需要可以提高进程的实时性和绑定 CPU 核心，可以使用 chrt 和 taskset
 
@@ -190,7 +194,14 @@ WantedBy=multi-user.target
 
 ```
 
-启动 PTP 服务
+如果使用 UDP 且需要调整防火墙，则需要执行
+
+```bash
+iptables -I INPUT -p udp -m udp --dport 319 -j ACCEPT
+iptables -I INPUT -p udp -m udp --dport 320 -j ACCEPT
+```
+
+启动 ptp4l 服务
 
 ```bash
 systemctl enable --now ptp4l
@@ -220,7 +231,7 @@ ptp4l[372.235]: master offset        -78 s2 freq  -28788 path delay      9204
 
 主偏移值是与主偏移量测得的偏移量（以纳秒为单位）。
 
-`s0`、`s1`、`s2` 字符串表示不同的时钟伺服状态：`s0` 已解锁，`s1` 表示时钟步进，`s2` 已锁定。一旦处于锁定状态 （`s2`），时钟将不会步进（仅缓慢调整），除非在配置文件中将 `pi_offset_const` 选项设置为正值（现在是 `step_threshold`）。伺服器将通过更改时钟频率而不是步进时钟来校正最大偏移量。设置为 `0.0` 时，伺服器除启动外将永不步进时钟。
+`s0`、`s1`、`s2` 字符串表示不同的时钟伺服状态：s0 表示未锁定，s1 表示正在同步，s2 表示锁定，锁定状态表示不会再发生阶跃行同步，只是缓慢调整；所以正常情况下，两台设备间只有初次 PTP 同步的时候时间才会大幅度调整，再之后若调整主设备时间，则从设备时间不会调整。
 
 `freq` 值是以十亿分之一 （ppb） 为单位的时钟频率调整。
 
@@ -289,37 +300,28 @@ INITIALIZING、LISTENING、UNCALIBRATED 和 SLAVE 是一些可能的端口状态
 
 ### phc2sys 示例
 
+phc2sys 实现网卡上的时钟同步到操作系统（以网卡上的时钟为 master）
+
 将系统时钟同步到网卡上的 PTP 硬件时钟（PHC），使用 `-s` 可按设备或网络接口指定主时钟，使用 `-w` 可等待直到 `ptp4l` 进入已同步状态：
 
 ```bash
 phc2sys -s eth0 -w
 ```
 
-PTP 按国际原子时（TAI）运行，而系统时钟使用的是协调世界时（UTC）。如果不指定 `-w` 来等待 `ptp4l` 同步，可以使用 `-O` 来指定 TAI 与 UTC 之间的偏差（以秒为单位）：
-
-```bash
-phc2sys -s eth0 -O -35
-```
-
-phc2sys 实现网卡上的时钟同步到操作系统（以网卡上的时钟为 master）
-
-PTP 按国际原子时 (TAI) 运行，而系统时钟使用的是协调世界时 (UTC)。如果您不指定 `-w` 来等待 `ptp4l` 同步，可以使用 `-O` 来指定 TAI 与 UTC 之间的偏差（以秒为单位）：
+PTP 按国际原子时（TAI）运行，而系统时钟使用的是协调世界时（UTC）。如果不指定 `-w` 来等待 `ptp4l` 同步，可以使用 `-O` 来指定 TAI 与 UTC 之间的偏差（以秒为单位）
 
 TAI 和 UTC 时间刻度之间的当前偏移量为 36 秒。当插入或删除闰秒时，偏移量会发生变化，这通常每隔几年发生一次。当不使用 `-w` 时，需要使用 `-O` 选项手动设置此偏移量，如下所示：
 
 ```bash
 phc2sys -s eth0 -O -36
+# phc2sys -s eth0 -O -35
 ```
 
-### phc2sys 同步到系统时钟
+### 配置 phc2sys
 
 使用 phc2sys 可将系统时钟同步到网卡上的 PTP 硬件时钟 (PHC)。系统时钟被视为从属时钟，而网卡上的时钟则为主时钟。PHC 本身将与 ptp4l 同步。
 
 使用 `-s` 可按设备或网络接口指定主时钟。使用 `-w` 等待 `ptp4l` 进入同步状态。`-w` 选项等待正在运行的 ptp4l 应用程序同步 `PTP` 时钟，然后从 ptp4l 检索 TAI 到 UTC 的偏移量。
-
-```bash
-phc2sys -s eth0 -w
-```
 
 配置文件
 
@@ -327,21 +329,21 @@ phc2sys -s eth0 -w
 # cat /etc/sysconfig/phc2sys
 
 # OPTIONS="-a -r"
-OPTIONS="-s eth0 -c CLOCK_REALTIME -m --step_threshold=1000 -w -u 128"
+OPTIONS="-s eth0 -c CLOCK_REALTIME -m --step_threshold=1.0 -w -u 600"
 ```
 
 `-a` 选项使 phc2sys 从 ptp4l 应用程序读取要同步的时钟。它将跟随 `PTP` 端口状态的变化，相应地调整 NIC 硬件时钟之间的同步。除非还指定了 `-r` 选项，否则系统时钟不会同步。`-a -r` 会自动寻找当前运行的 ptp4l 程序，利用它的时钟，同步给操作系统时钟，操作系统时钟是 slave。
 
 第二种用法中的 `-s eth0 -c CLOCK_REALTIME -w` 写的更清楚一点。`-s` 指定 master clock；`-c` 指定 slave clock 或 (CLOCK_REALTIME)，CLOCK_REALTIME 指的是操作系统的时钟。
 
-`--step_threshold=1000` 在 master 时钟发生突变时，slave 不是一下就跟过去，而是一步步跟过去，避免时钟跳变。
+`--step_threshold=1.0` 在 master 时钟发生突变时，slave 不是一下就跟过去，而是一步步跟过去，避免时钟跳变。
 
-也可以使用 `-u SUMMARY-UPDATES` 选项降低 `phc2sys` 命令的更新频率。
+也可以使用 `-u SUMMARY-UPDATES` 选项降低 `phc2sys` 命令的更新频率，单位为秒。
 
 为了防止 `PTP` 时钟频率的快速变化，可以通过使用较小的 `P` （比例） 和 `I` （积分）常数来避免时间跳变：
 
 ```bash
-phc2sys -a -r -P 0.01 -I 0.0001
+phc2sys ... -P 0.01 -I 0.0001
 ```
 
 需要可以提高进程的实时性和绑定 CPU 核心，可以使用 chrt 和 taskset
@@ -393,18 +395,27 @@ ptp4l[371.235]: master offset        285 s2 freq  -28511 path delay      9199
 ptp4l[372.235]: master offset        -78 s2 freq  -28788 path delay      9204
 ```
 
+其中 master offset 就是 master、slave 设备之间的时间偏移量，单位：ns
+
 `phc2sys` 输出示例：
 
 ```bash
-phc2sys[616.617]: Waiting for ptp4l...
-phc2sys[628.628]: phc offset     66341 s0 freq      +0 delay   2729
-phc2sys[629.628]: phc offset     64668 s1 freq  -37690 delay   2726
-[...]
-phc2sys[646.630]: phc offset      -333 s2 freq  -37426 delay   2747
-phc2sys[646.630]: phc offset       194 s2 freq  -36999 delay   2749
+phc2sys[1118350.191]: CLOCK_REALTIME rms  147 max  179 freq  -2393 +/-  36 delay   531 +/-   0
+phc2sys[1118352.192]: CLOCK_REALTIME rms  129 max  183 freq  -2548 +/-  64 delay   521 +/-   0
+phc2sys[1118354.192]: CLOCK_REALTIME rms   53 max   60 freq  -2425 +/-  14 delay   526 +/-   5
+phc2sys[1118356.192]: CLOCK_REALTIME rms   67 max   82 freq  -2380 +/-  24 delay   531 +/-   0
 ```
 
+输出包括：
+
+- 偏移均方根（rms）
+- 最大绝对误差（最大值）
+- 频率偏移（freq）：其平均值和标准偏差
+- 路径延迟（delay）：其含义和标准偏差
+
 ## PTP 管理客户端
+
+文档：<<https://docs.redhat.com/zh-cn/documentation/red_hat_enterprise_linux/7/html/system_administrators_guide/sec-using_the_ptp_management_client>>
 
 可以使用 `pmc` 客户端获取有关 `ptp` 的更详细信息。pmc 从标准输入或命令行读取按名称和管理 ID 指定的操作。然后通过选定的传输方式发送操作，并列显收到的任何答复。pmc 支持以下三个操作：`GET` 可检索指定的信息，`SET` 可更新指定的信息，`CMD`（或 `COMMAND`）可发起指定的事件。
 
@@ -412,6 +423,8 @@ phc2sys[646.630]: phc offset       194 s2 freq  -36999 delay   2749
 
 ```bash
 pmc -u -b 0 'GET TIME_STATUS_NP'
+
+pmc -u -b 0 'GET CURRENT_DATA_SET'
 ```
 
 `-b` 选项指定所发送消息中的边界跃点值。将此选项设置为 0 会将边界限制为本地 `ptp4l` 实例。如果将该值设置得更高，则还会检索距离本地实例更远的 PTP 节点发出的消息。返回的信息可能包括：
@@ -436,19 +449,8 @@ pmc -u -b 0 'GET TIME_STATUS_NP'
 
 此为超级主时钟身份。
 
-## 参考资料
+## 其他参考资料
 
-- <https://haocst.com/use-case/time-sync/linux-ptp-%E9%AB%98%E7%B2%BE%E5%BA%A6%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E5%AE%9E%E8%B7%B5/>
+- <https://docs.redhat.com/zh-cn/documentation/red_hat_enterprise_linux/8/html/configuring_basic_system_settings/chrony-with-hw-timestamping_configuring-time-synchronization>
 
-- <https://docs.redhat.com/zh-cn/documentation/red_hat_enterprise_linux/7/html/system_administrators_guide/sec-using_the_ptp_management_client>
-
-- <https://zhuanlan.zhihu.com/p/607427373>
-
-- <https://ty-chen.github.io/ptp/>
-
-- <https://blog.csdn.net/JiMoKuangXiangQu/article/details/135405068>
-
-====
-
-- <https://www.ctyun.cn/zhishi/p-377384>
-- <https://zhuanlan.zhihu.com/p/569740172>
+- <https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/configuring_basic_system_settings/configuring-time-synchronization_configuring-basic-system-settings#chrony-with-hw-timestamping_configuring-time-synchronization>

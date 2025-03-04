@@ -198,3 +198,10 @@ BC/OC 与 E2E-TC 的组网以及报文交互过程:
 BC/OC 与 P2P-TC 的组网以及报文交互过程:
 
 ![img](.assets/PTP协议简介/326049-20220913173427448-464211594.png)
+
+## 参考资料
+
+- <https://haocst.com/use-case/time-sync/linux-ptp-%E9%AB%98%E7%B2%BE%E5%BA%A6%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E5%AE%9E%E8%B7%B5/>
+- <https://zhuanlan.zhihu.com/p/607427373>
+- <https://ty-chen.github.io/ptp/>
+- <https://blog.csdn.net/JiMoKuangXiangQu/article/details/135405068>
