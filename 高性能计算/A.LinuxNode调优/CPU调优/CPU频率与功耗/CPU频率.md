@@ -141,14 +141,14 @@ ls /sys/devices/system/cpu/intel_pstate
 ```
 
 - max_perf_pct 最大频率的百分比，例如4GHZ 4GHZ*90% = 3.6GHZ,可利用此控制最大频率
-- min_perf_pct 最小比列，p-state能够调到最小频率的比例，这个比例最节能
+- min_perf_pct 最小比列，p-state 能够调到最小频率的比例，这个比例最节能
 - no_turbo 是否开启睿频， 0：开启 1： 关闭
 - num_pstates : 处理器支持的 p 状态数量。这个值在 0-255 之前。包含了睿频和非睿频 p-state。此属性是只读的，这是所支持的 p 状态与 cpu 电压和频率的一张表
 
 intel 关闭睿频
 
 ```shell
-echo 1 >  /sys/devices/system/cpu/intel_pstate/no_turbo
+echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
 ```
 
 ## `cpufreq`子系统
