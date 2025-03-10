@@ -91,8 +91,6 @@ rmmod exasock
 rmmod exanic
 ```
 
-
-
 ## 参考资料
 
 - <https://www.zhihu.com/column/c_1688495482572267520>
