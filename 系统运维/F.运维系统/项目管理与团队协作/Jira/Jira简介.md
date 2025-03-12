@@ -67,3 +67,5 @@ Jira 是 Atlassian 公司出品的项目与事务跟踪工具，被广泛应用�
 - <https://blog.csdn.net/qq_41386332/article/details/108658431>
 
 - <https://doc.devpod.cn/jira/jira-360469.html>
+
+- <https://www.cnblogs.com/pluto4596/p/12434172.html>
