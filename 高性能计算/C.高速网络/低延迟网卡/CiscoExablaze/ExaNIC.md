@@ -28,8 +28,7 @@ ExaNIC Software 及其驱动适用于各种高性能计算和金融交易场景�
 
 官方文档
 
-- <https://exablaze.com/docs/exanic/user-guide/installation/>
-- YUM 源 <https://exablaze.com/downloads/yum/redhat/el8/x86_64/>
+- <https://www.cisco.com/c/en/us/td/docs/dcn/nexus3550/smartnic/sw/user-guide/cisco-nexus-smartnic-user-guide/index.html>
 
 安装驱动
 
@@ -51,6 +50,8 @@ with this release:
 * Debian 12 (kernel 6.1)
 * Ubuntu 23.04 (kernel 6.2)
 ```
+
+9.4 patch：<https://github.com/cisco/exanic-software/files/15427480/exanic-software_el9_4.patch.gz>
 
 ## 配置网卡
 
