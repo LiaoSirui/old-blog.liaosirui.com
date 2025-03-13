@@ -102,6 +102,69 @@ mergecap -w output.pcap input.pcap input2.pcap [input3.pcap ...]
 mergecap -a -w output.pcap input.pcap input2.pcap
 ```
 
+## capinfos
+
+不带任何选项参数，以默认方式显示 pcap 文件的所有基本信息：
+
+```bash
+$ capinfos 2023-09-26-14-31-42-30s.pcap
+File name:           2023-09-26-14-31-42-30s.pcap
+File type:           Wireshark/tcpdump/... - pcap
+File encapsulation:  Ethernet
+File timestamp precision:  microseconds (6)
+Packet size limit:   file hdr: 65535 bytes
+Number of packets:   300 k
+File size:           261 MB
+Data size:           256 MB
+Capture duration:    30.096327 seconds
+First packet time:   2023-09-26 14:33:25.555011
+Last packet time:    2023-09-26 14:33:55.651338
+Data byte rate:      8,512 kBps
+Data bit rate:       68 Mbps
+Average packet size: 854.00 bytes
+Average packet rate: 9,967 packets/s
+SHA256:              4cd82ce1b8fd3d498794d14e2ada82a3acbafca64f1e699574e58a6deec600cc
+RIPEMD160:           347128fa0c6a4aeabcdeb71b1e6cdaf94d100999
+SHA1:                a800fa328b3e65af40d2b783b37e0a2b5d80591f
+Strict time order:   True
+Number of interfaces in file: 1
+Interface #0 info:
+                     Encapsulation = Ethernet (1 - ether)
+                     Capture length = 65535
+                     Time precision = microseconds (6)
+                     Time ticks per second = 1000000
+                     Number of stat entries = 0
+                     Number of packets = 300000
+```
+
+显示 pcap 文件的总大小：
+
+```bash
+$ capinfos -s 2023-09-26-14-31-42-30s.pcap
+File name:           2023-09-26-14-31-42-30s.pcap
+File size:           261 MB
+```
+
+显示 pcap 文件的时间长度：
+
+```bash
+$ capinfos -u 2023-09-26-14-31-42-30s.pcap
+File name:           2023-09-26-14-31-42-30s.pcap
+Capture duration:    30.096327 seconds
+```
+
+显示 pcap 文件的数据包总量：
+
+```bash
+$ capinfos -c 2023-09-26-14-31-42-30s.pcap
+File name:           2023-09-26-14-31-42-30s.pcap
+Number of packets:   300 k
+```
+
 ## 参考资料
 
 - <https://juejin.cn/post/7222141882515030071>
+
+- <https://getiot.tech/linux-command/editcap/>
+
+- <https://getiot.tech/linux-command/capinfos/#%E4%BB%8B%E7%BB%8D>
