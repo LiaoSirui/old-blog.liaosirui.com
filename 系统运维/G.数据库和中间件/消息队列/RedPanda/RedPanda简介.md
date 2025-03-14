@@ -14,3 +14,8 @@ Redpanda Console 是一个 可视化 Kafka/Redpanda 集群管理工具，它被�
 
 <https://docs.redpanda.com/current/reference/rpk/>
 
+## 参考资料
+
+- <https://blog.ktpro.ink/2024/07/06/ru-he-tong-guo-san-chong-fang-shi-bu-shu-redpanda/>
+
+- <https://docs.automq.com/zh/automq/integrations/kafka-ui/redpanda-console>
