@@ -29,15 +29,15 @@ Confluence 集成国外几乎所有主流的工具
 | --------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `Chinese Language Patch for Confluence` | 中文额外补充                                                 | <https://marketplace.atlassian.com/apps/1219843/chinese-language-patch-for-confluence> |
 | `Draw.io Confluence Plugin`             | Draw.io 支持                                                 | <https://marketplace.atlassian.com/apps/1210933/draw-io-diagrams-uml-bpmn-aws-erd-flowcharts> |
-| LaTeX Math                              | Latex 公式编辑                                               | <https://marketplace.atlassian.com/apps/1210882/latex-math>  |
-| Easy Heading Macro                      | 插件目录可以使用 wiki 全局配置、按照空间配置、按照页面配置自由选择，并且支持内容按照标题展开、收起 | <https://marketplace.atlassian.com/apps/1221271/easy-heading-macro-floating-table-of-contents> |
+| `LaTeX Math`                            | Latex 公式编辑                                               | <https://marketplace.atlassian.com/apps/1210882/latex-math>  |
+| `Easy Heading Macro`                    | 插件目录可以使用 wiki 全局配置、按照空间配置、按照页面配置自由选择，并且支持内容按照标题展开、收起 | <https://marketplace.atlassian.com/apps/1221271/easy-heading-macro-floating-table-of-contents> |
+| `Excalidraw for Confluence`             | 绘制手绘风格的图形，其中包含多种内置的图形库                 | <https://marketplace.atlassian.com/apps/1231435/excalidraw-for-confluence> |
 
 备份：
 
 | 插件名                         | 插件用途                                                     | 插件下载地址                                                 |
 | ------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Markdown for Confluence        | Markdown 支持                                                | <https://marketplace.atlassian.com/apps/1211445/markdown-for-confluence> |
-| Excalidraw for Confluence      | 绘制手绘风格的图形，其中包含多种内置的图形库                 |                                                              |
 | Mermaid Diagrams               | Mermaid 渲染插件                                             |                                                              |
 | EasyMind for Confluence        | 绘制脑图的工具                                               |                                                              |
 | Slide Presenter for Confluence | 快速制作幻灯片                                               |                                                              |
