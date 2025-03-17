@@ -1,3 +1,5 @@
+## Pip 安装
+
 安装指定版本的：
 
 ```bash
@@ -12,7 +14,7 @@ python get-pip.py
 curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
 ```
 
-## Pip 离线装包
+## pip 离线装包
 
 下载依赖
 
