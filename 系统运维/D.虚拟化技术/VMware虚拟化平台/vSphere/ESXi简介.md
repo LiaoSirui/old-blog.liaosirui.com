@@ -34,9 +34,9 @@ vSphere Essentials 和 Essentials Plus 专门为刚开始体验虚拟化的小�
 一些神秘的代码：
 
 ```
-ESXi 8 4V492-44210-48830-931GK-2PRJ4
-ESXi 8 4F40H-4ML1K-M89U0-0C2N4-1AKL4
-ESXi 8 HG00K-03H8K-48929-8K1NP-3LUJ4
+ESXi 8 4V492-44210-48830-931GK-2PRJ4 (vSphere 8 Enterprise Plus)
+ESXi 8 4F40H-4ML1K-M89U0-0C2N4-1AKL4 (vSphere 8 Enterprise)
+ESXi 8 HG00K-03H8K-48929-8K1NP-3LUJ4 (vSphere 8 Enterprise Plus)
 
 VCSA 8 0Z20K-07JEH-08030-908EP-1CUK4
 VCSA 8 0F41K-0MJ4H-M88U1-0C3N0-0A214

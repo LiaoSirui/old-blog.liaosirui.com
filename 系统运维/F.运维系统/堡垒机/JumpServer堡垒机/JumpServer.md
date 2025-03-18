@@ -61,8 +61,7 @@ from users.models import User
 receivers = User.objects.values_list("username", flat=True)
 all_users = []
 for r in receivers:
-    if '.' in r:
-        all_users.append(r)
+    all_users.append(r)
 
 for u_name in all_users:
     u = User.objects.get(username=u_name)
