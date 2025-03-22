@@ -2,6 +2,8 @@
 
 红帽 OpenShift 的开源社区版本称为 OKD（The Origin Community Distribution of Kubernetes，或 OpenShift Kubernetes Distribution 的缩写，原名 OpenShift Origin），是 Red Hat OpenShift Container Platform (OCP) 的上游和社区支持版本
 
+- <https://github.com/okd-project/okd>
+
 ## 部署 OKD Web 控制台
 
 创建一个特定的服务帐户
