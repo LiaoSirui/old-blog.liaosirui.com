@@ -142,9 +142,9 @@ vim /etc/default/grub
 启动 libvirtd 服务，并将其设为开机启动：
 
 ```bash
- systemctl enable libvirtd --now
+systemctl enable libvirtd --now
  
- systemctl status libvirtd
+systemctl status libvirtd
 ```
 
 libvirtd 启动成功后，会创建名为 `virbr0` 的虚拟网卡：
