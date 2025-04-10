@@ -25,3 +25,5 @@ node bin/build.js dist
 ## 参考资料
 
 - <https://www.showapi.com/news/article/678859cb4ddd79f11a4cdcd2>
+
+- <https://soulteary.com/2021/12/05/cronicle-a-lightweight-tool-for-timed-tasks-part-1.html>
