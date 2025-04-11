@@ -4,6 +4,8 @@
 
 ```bash
 watch -n1 lscpu -a -e
+
+# 还是推荐使用 watch cat /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_cur_freq
 ```
 
 输出示例
