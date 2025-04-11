@@ -92,6 +92,22 @@ rmmod exasock
 rmmod exanic
 ```
 
+## 其他问题
+
+如果找不到 <https://github.com/cisco/exanic-software/blob/master/util/exasock-stat.c>
+
+需要先安装
+
+```bash
+dnf install -y libnl3-devel
+```
+
+然后单独编译此工具
+
+```bash
+make -C util exasock-stat
+```
+
 ## 参考资料
 
 - <https://www.zhihu.com/column/c_1688495482572267520>
