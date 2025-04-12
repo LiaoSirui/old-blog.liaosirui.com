@@ -48,7 +48,7 @@ CPU 动态节能技术用于降低服务器功耗，通过选择系统空闲状�
 
 cpufreq 是一个动态调整 cpu 频率的模块，系统启动时生成一个文件夹 `/sys/devices/system/cpu/cpu0/cpufreq/`，里面有几个文件，其中 scaling_min_freq 代表最低频率，scaling_max_freq 代表最高频率，scalin_governor 代表 cpu 频率调整模式，用它来控制 CPU 频率
 
-```
+```bash
 cd /sys/devices/system/cpu/cpu0/cpufreq/
 
 affected_cpus
@@ -202,3 +202,5 @@ echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
 - <https://www.cnblogs.com/LoyenWang/p/11385811.html>
 
 - <https://huataihuang.gitbooks.io/cloud-atlas/content/os/linux/kernel/cpu/acpi_cpufreq.html>
+
+- <https://blog.csdn.net/zhouhuaooo/article/details/127419771>
