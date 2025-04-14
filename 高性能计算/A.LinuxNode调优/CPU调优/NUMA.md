@@ -48,7 +48,7 @@ numastat
 
 详情
 
-```
+```bash
 > numastat
                            node0
 numa_hit              1984974541
