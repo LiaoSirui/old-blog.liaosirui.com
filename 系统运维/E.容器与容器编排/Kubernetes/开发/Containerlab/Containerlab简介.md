@@ -41,4 +41,3 @@ Containerlab 还提供了丰富的实验案例，可以在 Lab examples 中找�
 ```bash
 bash -c "$(curl -sL https://get.containerlab.dev)" -- -v 0.47.2
 ```
-
