@@ -9,4 +9,3 @@ BGP 边界网络协议采用 TCP 179 端口
 ![img](./.assets/边界网关BGP协议/vvsibFWkwqHrG3ffYxKKwgwq4w6c4E2W4B9sf5Ir0eUblGspjOL2NXkcVEIJFudUns9TR1eQ8lMRGJ5DWnAeTwg.png)
 
 Leaf 层由接入交换机组成，这些交换机会对来自服务器的流量进行汇聚并直接连接到 Spine 或网络核心，Spine 交换机以一种全网格拓扑与所有 Leaf 交换机实现互连
-
