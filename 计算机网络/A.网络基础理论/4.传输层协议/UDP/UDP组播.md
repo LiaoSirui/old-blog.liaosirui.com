@@ -114,33 +114,31 @@ if __name__=="__main__":
 ```python
 import socket
 import struct
- 
-class MultiCastRecv:
- 
- 
-    def __init__(self,multicastip:str,port:int,timeout=5):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        multicast_group = multicastip
-        address = ('', port)
-        group = socket.inet_aton(multicast_group)
-        mreq = struct.pack('4sL', group, socket.INADDR_ANY)
-        test_socket = self.socket
-        test_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-        test_socket.bind(address)
-        test_socket.settimeout(timeout)
-        self.data = None
- 
-    
-    def recv_data(self):
-         self.data,addr = self.socket.recvfrom(4096)
- 
- 
-if __name__ == "__main__":
-    recv_obj = MultiCastRecv('239.0.0.1', 11111)
-    while True:
-        recv_obj.recv_data()
-        content = recv_obj.data
-        print(f'Recv data is {content}')
+
+# 组播组和端口
+MCAST_GRP = '232.8.0.19'
+MCAST_PORT = 23110
+# 本地绑定的网卡 IP
+LOCAL_IP = '192.168.152.134'
+
+# 创建 socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+# 允许端口复用
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+# 绑定到本地的 IP 和端口
+sock.bind((LOCAL_IP, MCAST_PORT))
+
+# 加入多播组
+mreq = struct.pack("4s4s", socket.inet_aton(MCAST_GRP), socket.inet_aton(LOCAL_IP))
+sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
+print(f"Listening on {MCAST_GRP}:{MCAST_PORT}")
+
+# 接收数据
+while True:
+    data, addr = sock.recvfrom(1024)
+    print(f"Received data from {addr}: {data}")
 ```
 
 - 组播地址范围：有效的 IPv4 组播地址范围是 `224.0.0.0` 到 `239.255.255.255`。
