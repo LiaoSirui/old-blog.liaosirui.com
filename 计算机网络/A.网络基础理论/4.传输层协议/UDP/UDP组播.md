@@ -68,77 +68,73 @@ ip route add 239.255.255.250/32 dev eth0
 
 ```python
 import socket
-import sys
 import time
- 
-DSTPORT = 11111     # 报文的目的端口
-SRCPORT = 22222     # 报文的源端口
-SRCADDR = '172.16.170.4'   # 发送报文的网卡 ip
-MULTICAST = '239.0.0.1'    # 组播组 ip
- 
- 
-class MultiCastSend:
- 
-    def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.multicast_group = (MULTICAST, DSTPORT)
-        self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
-        self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP,
-                               socket.inet_aton(MULTICAST) + socket.inet_aton(SRCADDR))
- 
-    def send_multicast_data(self, data: bytes):
-        self.socket.sendto(data, self.multicast_group)
- 
-    def close(self):
-        self.socket.close()
- 
- 
-if __name__=="__main__":
-    send_obj = MultiCastSend()
-    content = b'\x01\x02\x03\x04'
-    i = 0
+
+# 多播地址和端口
+MCAST_GRP = "232.8.0.19"
+MCAST_PORT = 23110
+
+# 指定要使用的网卡IP（修改为要使用的网卡IP地址）
+interface_ip = "192.168.152.134"
+
+# 创建 UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+
+# 设置 TTL 为 1，限制多播范围在本地网段
+sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
+
+# 指定从哪个网卡发送组播数据
+sock.setsockopt(
+    socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(interface_ip)
+)
+
+try:
     while True:
-        if i <= 100:
-            send_obj.send_multicast_data(content)
-            print("send successful")
-            i += 1
-            time.sleep(2)
-        else:
-            print("100 次循环结束")
-            send_obj.close()
-            sys.exit(0)
+        message = f"来自 {interface_ip} 的组播消息"
+        sock.sendto(message.encode(), (MCAST_GRP, MCAST_PORT))
+        print(f"已发送: {message}")
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("服务器退出")
+finally:
+    sock.close()
+
 ```
 
 接收端
 
 ```python
 import socket
-import struct
 
-# 组播组和端口
-MCAST_GRP = '232.8.0.19'
+# 多播地址和端口
+MCAST_GRP = "232.8.0.19"
 MCAST_PORT = 23110
-# 本地绑定的网卡 IP
-LOCAL_IP = '192.168.152.134'
 
-# 创建 socket
+# 指定要使用的网卡 IP（修改为要使用的网卡 IP 地址）
+interface_ip = "192.168.152.129"
+
+# 创建 UDP socket 并允许地址复用
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-# 允许端口复用
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-# 绑定到本地的 IP 和端口
-sock.bind((LOCAL_IP, MCAST_PORT))
+# 绑定到组播端口，'' 表示所有本地地址
+sock.bind(("", MCAST_PORT))
 
-# 加入多播组
-mreq = struct.pack("4s4s", socket.inet_aton(MCAST_GRP), socket.inet_aton(LOCAL_IP))
+# 加入组播组：mreq 包含组播地址和本地接口 IP
+mreq = socket.inet_aton(MCAST_GRP) + socket.inet_aton(interface_ip)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-print(f"Listening on {MCAST_GRP}:{MCAST_PORT}")
+print("客户端已启动, 等待接收消息...")
+try:
+    while True:
+        data, addr = sock.recvfrom(1024)
+        # 打印收到的原始组播报文（字节）
+        print(f"从 {addr} 收到数据: {data}")
+except KeyboardInterrupt:
+    print("客户端退出")
+finally:
+    sock.close()
 
-# 接收数据
-while True:
-    data, addr = sock.recvfrom(1024)
-    print(f"Received data from {addr}: {data}")
 ```
 
 - 组播地址范围：有效的 IPv4 组播地址范围是 `224.0.0.0` 到 `239.255.255.255`。
