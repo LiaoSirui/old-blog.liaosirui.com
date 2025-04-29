@@ -40,7 +40,5 @@ P-State EPP 依赖于 CPPC（Collaborative Processor Performance Control），�
 ## 参考资料
 
 - <https://cyp0633.icu/post/amd-pstate-epp/>
-
 - <https://www.bilibili.com/opus/803895260811886601>
-
 - <https://www.reddit.com/r/linux/comments/15p4bfs/amd_pstate_and_amd_pstate_epp_scaling_driver/?tl=zh-hans>

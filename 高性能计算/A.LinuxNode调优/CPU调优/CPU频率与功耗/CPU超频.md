@@ -43,4 +43,3 @@ cpupower frequency-info
 ```bash
 stress -c 100
 ```
-

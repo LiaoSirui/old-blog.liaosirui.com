@@ -9,8 +9,6 @@ intel_pstate=disable intel_idle.max_cstate=0 processor.max_cstate=0
 amd_pstate=passive
 ```
 
-
-
 下面是一个 Intel 处理器官方参数
 
 ![img](./.assets/CPU功耗与性能管理/i9-9900k-turbo-freq.png)
@@ -49,7 +47,7 @@ CPU min MHz:                        1500.0000
 
 还可以通过 cpuinfo 查看，每个 Core 都可能工作在不同频率
 
-```
+```bash
 cat /proc/cpuinfo | egrep '(processor|cpu MHz)'
 
 processor	: 0
@@ -80,9 +78,6 @@ TDP 表示的处理器运行在基频时的平均功耗（average power）
 ## 参考资料
 
 - <https://arthurchiao.art/blog/linux-cpu-2-zh/>
-
 - <https://blog.csdn.net/xiaofeng_yan/article/details/108969545>
-
 - <https://blog.mygraphql.com/zh/notes/low-tec/kernel/cpu-frequency/>
-
 - <https://wiki.archlinuxcn.org/wiki/CPU_%E8%B0%83%E9%A2%91>
