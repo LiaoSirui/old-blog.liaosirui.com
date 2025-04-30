@@ -179,8 +179,6 @@ touch /mnt/nfs/raid10/test.txt
 10.244.244.3:/data/raid10 /mnt/nfs/raid10 nfs defaults,nolock,retrans=2,_netdev 0 0
 ```
 
-
-
 ### Exportfs
 
 Exportfs 命令的常用选项为 -a、-r、-u 和 -v，各选项的含义如下
