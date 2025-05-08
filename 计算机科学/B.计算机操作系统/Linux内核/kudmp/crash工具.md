@@ -20,13 +20,11 @@ dnf install -y --enablerepo="base-debuginfo" install kernel-debuginfo
 
 可以从 <https://kojidev.rockylinux.org/koji/packageinfo?packageID=202> 获取
 
-```
+```bash
 https://kojidev.rockylinux.org/kojifiles/packages/kernel/4.18.0/425.3.1.el8/x86_64/kernel-debuginfo-4.18.0-425.3.1.el8.x86_64.rpm
 
 https://kojidev.rockylinux.org/kojifiles/packages/kernel/4.18.0/425.3.1.el8/x86_64/kernel-debuginfo-common-x86_64-4.18.0-425.3.1.el8.x86_64.rpm
 ```
-
-
 
 （2）进入 core 文件所在路径， 执行如下命令：
 
