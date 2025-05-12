@@ -124,7 +124,6 @@ cd /tmp
 
 等待升级完成即可，重新授权
 
-```
+```bash
 GRANT ALL PRIVILEGES ON DATABASE gitlab TO gitlab;
 ```
-
