@@ -38,4 +38,3 @@ Host github.com
     User git
     ProxyCommand connect -S 127.0.0.1:8899 %h %p
 ```
-
