@@ -1,5 +1,12 @@
-MySQL 的高可用性解决方案目前大致分为 5 种，按照高可用的级别（99.9999% 为最高级）排序依次为：（1）主从复制（2）具有自动故障转移功能的主从复制（3）利用共享存储、OS 或虚拟化软件实现主备架构（4）MySQL Group Replication 群组复制（5）MySQL NDB Cluster
+MySQL 的高可用性解决方案目前大致分为 5 种，按照高可用的级别（99.9999% 为最高级）排序依次为：
 
+- （1）主从复制
+- （2）具有自动故障转移功能的主从复制
+- （3）利用共享存储、OS 或虚拟化软件实现主备架构
+- （4）MySQL Group Replication 群组复制
+- （5）MySQL NDB Cluster
+
+MySQL
 
 - MySQL Replication：允许数据从一台实例上复制到一台或多台其它的实例上
 - MySQL Group Replication：群组复制提供更好的冗余性、自动恢复以及写入扩展

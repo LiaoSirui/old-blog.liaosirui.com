@@ -1,6 +1,6 @@
 ## TPC-C
 
-https://www.tpc.org/tpcc/
+<https://www.tpc.org/tpcc/>
 
 TPC 是一系列事务处理和数据库基准测试的规范。其中TPC-C（Transaction Processing Performance Council）是针对 OLTP 的基准测试模型。
 

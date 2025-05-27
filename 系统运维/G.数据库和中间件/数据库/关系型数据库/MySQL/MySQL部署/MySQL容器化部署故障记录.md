@@ -8,7 +8,6 @@
 
 <https://github.com/docker-library/mysql/issues/873>
 
-```
+```bash
 LimitNOFILE=1048576
 ```
-

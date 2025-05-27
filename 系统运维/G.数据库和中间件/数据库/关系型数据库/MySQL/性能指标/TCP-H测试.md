@@ -2,7 +2,7 @@
 
 ## 简介
 
-TPC-H 是事务处理性能委员会（ Transaction Processing Performance Council ）制定的基准程序之一，TPC- H 主要目的是评价特定查询的决策支持能力，该基准模拟了决策支持系统中的数据库操作，测试数据库系统复杂查询的响应时间，以每小时执行的查询数(TPC-H QphH@Siz)作为度量指标。
+TPC-H 是事务处理性能委员会（ Transaction Processing Performance Council ）制定的基准程序之一，TPC-H 主要目的是评价特定查询的决策支持能力，该基准模拟了决策支持系统中的数据库操作，测试数据库系统复杂查询的响应时间，以每小时执行的查询数(TPC-H QphH@Siz)作为度量指标。
 
 用于进行并行查询（OLAP）测试，以评估商业分析中决策支持系统（DSS）的性能。它包含了一整套面向商业的ad-hoc查询和并发数据修改，强调测试的是数据库、平台和I/O性能，关注查询能力。
 
@@ -17,11 +17,11 @@ Power测试和Throughout测试通过数理方式合成的结果为TPC-H基准测
 
 ## 相关链接
 
-* tpch下载地址（TPC-H 需要完成注册后才可以下载）：https://www.tpc.org/tpc_documents_current_versions/download_programs/tools-download-request5.asp?bm_type=TPC-H&bm_vers=3.0.1&mode=CURRENT-ONLY
+* tpch下载地址（TPC-H 需要完成注册后才可以下载）：<https://www.tpc.org/tpc_documents_current_versions/download_programs/tools-download-request5.asp?bm_type=TPC-H&bm_vers=3.0.1&mode=CURRENT-ONLY>
 
-* tpch工具github仓库地址：https://github.com/electrum/tpch-dbgen
+* tpch工具github仓库地址：<https://github.com/electrum/tpch-dbgen>
 
-* 参考阿里云tpch工具使用：https://help.aliyun.com/document_detail/146099.html?spm=a2c4g.11186623.6.773.4797364bCS7aO5
+* 参考阿里云tpch工具使用：<https://help.aliyun.com/document_detail/146099.html?spm=a2c4g.11186623.6.773.4797364bCS7aO5>
 
 ## 部署 MySQL
 
@@ -31,7 +31,7 @@ CPU： 2GHz （2000m）
 
 建议配置
 
-```
+```ini
 [mysqld]
 innodb_buffer_pool_size=2G  # 缓存池大小 50%的内存
 sql_mode=  # 取消主键限制
@@ -41,7 +41,7 @@ lower_case_table_names = 1  # 取消表字段大小写敏感
 
 查看配置是否生效
 
-```
+```ini
 show variables like 'innodb_buffer_pool_size';
 show variables like 'sql_mode';
 show variables like 'max_connections';
@@ -51,7 +51,7 @@ show variables like 'local_infile';
 
 结果：
 
-```
+```ini
  MySQL  mysql-innodbcluster:3306 ssl  SQL > show variables like 'innodb_buffer_pool_size';
 +-------------------------+------------+
 | Variable_name           | Value      |
@@ -86,7 +86,7 @@ show variables like 'local_infile';
 
 ### 下载 dbgen
 
-* TPC-H_Tools_v3.0.1.zip (Tools) https://www.tpc.org/tpc_documents_current_versions/download_programs/tools-download-request5.asp?bm_type=TPC-H&bm_vers=3.0.1&mode=CURRENT-ONLY
+* TPC-H_Tools_v3.0.1.zip (Tools) <https://www.tpc.org/tpc_documents_current_versions/download_programs/tools-download-request5.asp?bm_type=TPC-H&bm_vers=3.0.1&mode=CURRENT-ONLY>
 
 ### 编译 dbgen
 

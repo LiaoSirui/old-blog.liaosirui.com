@@ -14,7 +14,7 @@ MySQL错误1062（23000）是指在插入或更新数据时，违反了唯一性
 
 在 SQL 中，可以使用以下语句来检查唯一性约束：
 
-```
+```bash
 SELECT COUNT(*) FROM table_name WHERE column_name = 'value';
 ```
 
@@ -30,7 +30,7 @@ SELECT COUNT(*) FROM kbb__bill WHERE id = '9e8eda45-78bb-4905-b3fa-5179f9467659'
 
 ## 修复主从
 
-如果这个问题是在主从复制环境下出现的，可以尝试重新启动从服务器的SQL线程。在MySQL中，你可以使用以下命令来重新启动从服务器的SQL线程：
+如果这个问题是在主从复制环境下出现的，可以尝试重新启动从服务器的 SQL 线程。在 MySQL 中，你可以使用以下命令来重新启动从服务器的SQL线程：
 
 ```sql
 START SLAVE;

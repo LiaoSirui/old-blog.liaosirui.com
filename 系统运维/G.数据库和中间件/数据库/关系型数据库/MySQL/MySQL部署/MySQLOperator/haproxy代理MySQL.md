@@ -7,7 +7,7 @@ haproxy可以通过 **TCP协议** 来代理MySQL。但是两个问题必须考�
 
 haproxy默认已支持MySQL的健康检查，对应的指令为`option mysql-check`，浏览下该指令语法：
 
-```
+```bash
 option mysql-check [ user <username> [ post-41 ] ]
 ```
 
@@ -25,7 +25,7 @@ option mysql-check [ user <username> [ post-41 ] ]
 
 要检查数据库mytest是否存在，外部的脚本(假设脚本名为/usr/bin/mysqlchk.sh)内容大概如下：
 
-```
+```bash
 #!/bin/bash
 
 # $0:/usr/bin/mysqlchk.sh
@@ -180,12 +180,10 @@ listen  haproxy_3307_write_single
         server galera3 192.168.55.113:3306 check backup
 ```
 
-上面的配置通过3306端口和3307端口进行读写分离，并且在负责写的3307中只有一个节点可写，其余两个节点作为backup节点。
+上面的配置通过 3306 端口和 3307 端口进行读写分离，并且在负责写的3307中只有一个节点可写，其余两个节点作为backup节点。
 
-对于MySQL的负载来说，更建议采用MySQL协议感知的程序来实现，例如mysql router，proxysql，maxscale，mycat等等数据库中间件。
-
+对于 MySQL 的负载来说，更建议采用MySQL协议感知的程序来实现，例如mysql router，proxysql，maxscale，mycat等等数据库中间件。
 
 <br />
 
-
-https://www.percona.com/doc/kubernetes-operator-for-pxc/haproxy-conf.html
+<https://www.percona.com/doc/kubernetes-operator-for-pxc/haproxy-conf.html>

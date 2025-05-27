@@ -10,7 +10,6 @@ Oracle MySQL Operator 支持以下 2 种 MySQL 部署模式。
 
 * Multi-Primary - 集群中各节点角色相同，没有主从的概念，每个节点都可以处理用户的读写请求。
 
-
 ## 安装
 
 使用工具 helm

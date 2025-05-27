@@ -11,6 +11,4 @@ SELECT (@@key_buffer_size + @@query_cache_size + @@tmp_table_size + @@innodb_buf
 	) * (@@read_buffer_size + @@read_rnd_buffer_size + @@sort_buffer_size + @@join_buffer_size + @@binlog_cache_size + @@thread_stack)) / @giga_bytes AS MAX_MEMORY_GB;
 ```
 
-
-
-https://www.51cto.com/article/675479.html
+<https://www.51cto.com/article/675479.html>

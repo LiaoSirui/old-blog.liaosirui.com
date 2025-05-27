@@ -18,9 +18,7 @@ sort buffer size 和 max_sort_length 之间的关系：
 ![image-20230516180851122](.assets/MY-013131ER_SERVER_OUT_OF_SORTMEMORY/image-20230516180851122.png)
 
 
-
 - MAX_SORT_LENGTH 仅仅锁定排序中最大支持的一行的字节数
-
 - SORT_BUFFER_SIZE 设定的是整体我们给排序中多少容量的字节来支持整体的排序
 
 SORT_BUFFER_SIZE 是固定，MAX_SORT_LENGTH 越大，则支持的容纳的行数就越少
@@ -78,4 +76,3 @@ mysql> show variables like 'sort_buffer_size';
 sort-buffer-size = 2M
 
 ```
-
