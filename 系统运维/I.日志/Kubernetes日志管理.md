@@ -185,4 +185,3 @@ containerd 作为 k8s 容器运行时的情况下， 容器日志的落盘由 ku
 "containerLogMaxSize": "100Mi",
 "containerLogMaxFiles": 5,
 ```
-
