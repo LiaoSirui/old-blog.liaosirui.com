@@ -18,18 +18,6 @@ dnf install -y mdadm
 fdisk -l
 ```
 
-检查分区表
-
-```bash
-wipefs /dev/sdb
-```
-
-清除所有分区表
-
-```bash
-wipefs -a -f /dev/sdb
-```
-
 创建 RAID 10。使用以下命令创建 RAID 10：
 
 ```bash
