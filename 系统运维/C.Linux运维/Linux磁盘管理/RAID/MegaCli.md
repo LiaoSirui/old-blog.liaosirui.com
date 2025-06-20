@@ -27,7 +27,7 @@ ln -s /opt/MegaRAID/MegaCli/MegaCli64 /usr/sbin/MegaCli64
 
 ## 常用查看命令
 
-###  查看 RAID 卡状态
+### 查看 RAID 卡状态
 
 查 raid 卡信息 （可以查看 raid 卡时间，raid 卡时间和系统时间可能不一致，raid 卡日志用的是 raid 卡时间）
 

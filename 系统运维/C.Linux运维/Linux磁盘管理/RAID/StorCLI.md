@@ -37,7 +37,7 @@ update-alternatives --set storcli64 /opt/MegaRAID/storcli/storcli64
 
 esxi 安装
 
-```
+```bash
 esxcli software acceptance set --level=CommunitySupported
 esxcli software vib install -v /tmp/BCM_bootbank_storcli_007.2414.0000.0000-01.vib
 ```
@@ -104,7 +104,7 @@ storcli64 /c<controller_id>/e<enclosure_id>/s<slot_id> set JBOD
 
 例如使能 RAID 卡的硬盘直通功能，并设置 slot 7 硬盘为直通盘
 
-```
+```bash
 storcli64 /c0 set jbod=on
 
 storcli64 /c0/e252/s7 set JBOD

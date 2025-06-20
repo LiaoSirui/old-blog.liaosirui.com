@@ -65,29 +65,6 @@ ipmitool user set password 1 abc-123
 - <https://www.cnblogs.com/HByang/p/16127044.html>
 - <https://cloud.tencent.com/developer/article/2422636>
 
-## 其他问题
-
-Using JNLP file after installing Oracle Java v. 8 Update 351
-
-Open the "java.security" file available in the following directory: `[installation_path]\server\java\jre\lib\security\java.security`
-
-Locate the "jdk.certpath.disabledAlgorithms" property and set it to the following value:
-
-```java
-MD2, MD5, SHA1 jdkCA & usage TLSServer, \
-RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224, \
-include jdk.disabled.namedCurves
-```
-
-Java 控制台添加例外站点无效 错误：请求无限制访问系统
-
-```
-# 注释以 jdk.jar 开头的行
-# jdk.jar.disabledAlgorithms=MD2, MD5, RSA keySize < 1024, \
-# DSA keySize < 1024, include jdk.disabled.namedCurves,  \
-# SHA1 denyAfter 2019-01-01
-```
-
 ## 超微主板管理网口设置
 
 超微的的 IPMI 界面具有三个选项（专用，共享，故障转移），您可以使用 LAN1 代替专用的 IPMI 端口，并且通常在默认 BIOS 设置下可以正常工作。无法在 LAN2 接口上运行 IPMI。
