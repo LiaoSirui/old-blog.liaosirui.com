@@ -122,7 +122,7 @@ Tailscale 使用的算法很有趣，所有客户端之间的连接都是先选�
 
 在这种拓扑下, 两个设备之间的通讯速度已经不在取决于中央服务器, 而是直接取决于两端设备的带宽, 也就是说达到了设备网络带宽峰值. 当然 NAT 穿透也不是百分百能够成功的, 在复杂网络情况下有些防火墙不会按照预期工作或者说有更严格的限制; 比如 IP、端口、协议限制等等, 所以为了保证可靠性可以让中央服务器中转做后备方案, 即尽量尝试 NAT 穿透, 如果不行走中央服务器中继
 
-## Headscale
+## Headscale 部署
 
 ### 完整的部署文件
 
@@ -584,7 +584,7 @@ headscale routes list -i 1
 
 开启路由：
 
-```
+```bash
 headscale routes enable -r 1
 ```
 
@@ -647,20 +647,20 @@ Tailscale 提供了 acme 功能，可以自动申请 Let’s Encrypt 证书
 
 执行下列命令
 
-```
+```bash
 tailscale cert t630-win10.cat-silverside.ts.net
 ```
 
 即可在当前目录得到私钥和对应的证书：
 
-```
+```bash
 t630-debian.cat-silverside.ts.net.crt
 t630-debian.cat-silverside.ts.net.key
 ```
 
 将这两个文件拷贝至合适的目录，重启对应服务即可使用。我们以 cockpit 为例：
 
-```
+```bash
 sudo cp t630-debian.cat-silverside.ts.net.key t630-debian.cat-silverside.ts.net.crt /etc/cockpit/ws-certs.d/
 sudo systemctl restart cockpit
 ```
@@ -682,7 +682,7 @@ Exit 一般指的是出口，比如楼道里、消防门上方都会表示 Exit�
 
 在 Linux 机器上开启 Exit-Node 功能，需要指定启动命令，我们以 Debian 12 为例：
 
-```
+```bash
 tailscale up --accept-routes --ssh --advertise-exit-node
 ```
 
@@ -929,9 +929,9 @@ export PATH="$HOME/go/bin:$PATH"
 
 ### 其他 Linux 发行版
 
-- OpenWrt：https://github.com/adyanth/openwrt-tailscale-enabler
-- 群晖：https://github.com/tailscale/tailscale-synology
-- 威联通：https://github.com/tailscale/tailscale-qpkg
+- OpenWrt：<https://github.com/adyanth/openwrt-tailscale-enabler>
+- 群晖：<https://github.com/tailscale/tailscale-synology>
+- 威联通：<https://github.com/tailscale/tailscale-qpkg>
 
 ### Pre-Authkeys 接入
 
@@ -969,7 +969,7 @@ tailscale up \
 
 回到 Tailscale 客户端所在的 Linux 主机，可以看到 Tailscale 会自动创建相关的路由表和 iptables 规则。路由表可通过以下命令查看：
 
-```
+```bash
 [root@dev-router ~]# ip route show table 52
 100.64.0.1 dev tailscale0
 100.100.100.100 dev tailscale0
@@ -1019,9 +1019,6 @@ tailscale netcheck
 ## 参考资料
 
 - <https://junyao.tech/posts/18297f50.html>
-
 - <https://kiprey.github.io/2023/11/tailscale-derp/>
-
 - <https://mritd.com/2022/10/19/use-headscale-to-build-a-p2p-network/>
-
 - <https://linux.do/t/topic/171651>
