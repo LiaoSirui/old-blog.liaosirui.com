@@ -43,7 +43,7 @@ date
 
 可选源位于：
 
-```
+```bash
 /sys/devices/system/clocksource/clocksource0/available_clocksource
 ```
 
@@ -56,7 +56,7 @@ date
 
 当前时钟源位于：
 
-```
+```bash
 /sys/devices/system/clocksource/clocksource0/current_clocksource
 ```
 
@@ -70,7 +70,7 @@ chronyc sources -v
 
 以 ntpq 输出为例
 
-``` 
+```bash
 remote            refid     st  t  when poll reach  delay   offset   jitter
 
 ==================================================================
@@ -78,7 +78,6 @@ remote            refid     st  t  when poll reach  delay   offset   jitter
 *10.247.160.31  10.240.241.5  4  u  53    64  377   0.240  0.374  0.240
 
 ```
-
 
 | 字段           | 含义                                                         | 备注                               |
 | -------------- | ------------------------------------------------------------ | ---------------------------------- |
