@@ -124,5 +124,4 @@ PAE 物理地址扩展，软件包 `kernel-PAE-debuginfo`
 
 - <https://www.ctyun.cn/developer/article/421358102605893>
 - <https://access.redhat.com/documentation/zh-cn/red_hat_enterprise_linux/8/html/managing_monitoring_and_updating_the_kernel/running-and-exiting-the-crash-utility_analyzing-a-core-dump>
-
 - <https://blog.csdn.net/WANGYONGZIXUE/article/details/128431816>
