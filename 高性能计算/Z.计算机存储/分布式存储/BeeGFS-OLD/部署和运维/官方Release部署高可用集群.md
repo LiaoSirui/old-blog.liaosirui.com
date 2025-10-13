@@ -111,7 +111,7 @@ echo """172.17.0.2 beegfs-node1
 
 目录规划如下：
 
-```
+```bash
 /beegfs/mgmtd
 /beegfs/meta
 /beegfs/storge/target-x
@@ -316,7 +316,7 @@ vdb    253:16   0   100G  0 disk
 echo "UUID=d5386a2f-44a3-47a3-b836-15aca91589f9 /beegfs/meta ext4 sync,noatime,nodiratime 0 0" >> /etc/fstab
 ```
 
-将格式化后的新卷挂载到 `/data/lun_meta`
+将格式化后的新卷挂载到 `/beegfs/meta`
 
 ```bash
 mount -a
