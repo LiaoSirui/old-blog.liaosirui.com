@@ -4,8 +4,6 @@
 
 <https://waynerv.com/posts/build-automatic-code-quality-workflow>
 
-
-
 ```yaml
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
