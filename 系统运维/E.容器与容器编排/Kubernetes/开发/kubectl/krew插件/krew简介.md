@@ -53,4 +53,3 @@ kubectl krew index add kvaps https://github.com/kvaps/krew-index
 "${KUBE_KREW_INSTALL_CMD[@]}" warp
 "${KUBE_KREW_INSTALL_CMD[@]}" whoami
 ```
-
