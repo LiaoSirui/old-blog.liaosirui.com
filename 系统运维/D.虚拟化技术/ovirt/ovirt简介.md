@@ -1,1 +1,0 @@
-官网：<https://www.ovirt.org/>
