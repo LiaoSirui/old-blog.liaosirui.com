@@ -1,1 +1,0 @@
-Apache CouchDB是一款面向文档的NoSQL数据库，使用JSON表示文档
