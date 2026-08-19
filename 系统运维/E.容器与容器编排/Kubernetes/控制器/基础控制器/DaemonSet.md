@@ -1,1 +1,0 @@
-DaemonSet 用于在每个 Kubernetes 节点中将守护进程的副本作为后台进程运行

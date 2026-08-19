@@ -1,1 +1,0 @@
-StatefulSet 类似于 ReplicaSet，但是它可以处理 Pod 的启动顺序，为保留每个 Pod 的状态设置唯一标识
